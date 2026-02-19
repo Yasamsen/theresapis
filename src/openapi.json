@@ -193,6 +193,33 @@
     }
   }
 },
+"/anime/alya": {
+  "get": {
+    "summary": "alya",
+    "description": "alya Random Images",
+    "tags": ["anime"],
+    "responses": {
+      "200": {
+        "description": "Respon berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": true },
+                "images": {
+                  "type": "array",
+                  "items": { "type": "string", "format": "uri" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": { "description": "Gagal memproses request" }
+    }
+  }
+},
     "/download/capcut": {
   "get": {
     "summary": "CapCut Downloader",
