@@ -613,7 +613,7 @@
     }
   }
 },
-"/search/pinterest": {
+"/search/Pinterest": {
   "get": {
     "summary": "Search Pinterest Images",
     "description": "Mencari gambar dari Pinterest berdasarkan kata kunci dan mengembalikan URL gambar resolusi lebih tinggi.",
@@ -676,7 +676,7 @@
       }
     }
   }
-},
+}
 "/tools/remini": {
   "get": {
     "summary": "Remini AI Image Processing",
