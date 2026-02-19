@@ -613,33 +613,40 @@
     }
   }
 },
-"/search/Pinterest": {
+"/search/pinterest": {
   "get": {
     "summary": "Search Pinterest Images",
-    "description": "Mencari gambar dari Pinterest berdasarkan kata kunci dan mengembalikan URL gambar resolusi lebih tinggi.",
+    "description": "Scrape gambar Pinterest berdasarkan kata kunci dan mengembalikan array URL resolusi tinggi.",
     "tags": ["Search"],
     "parameters": [
       {
         "in": "query",
         "name": "q",
         "required": true,
-        "schema": { "type": "string" },
-        "description": "Kata kunci pencarian, contoh: 'naruto', 'waifu'"
+        "schema": {
+          "type": "string"
+        },
+        "description": "Kata kunci pencarian, contoh: naruto, anime girl"
       }
     ],
     "responses": {
       "200": {
-        "description": "Berhasil mengambil gambar Pinterest",
+        "description": "Berhasil mengambil data Pinterest",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "properties": {
-                "status": { "type": "boolean", "example": true },
-                "total": { "type": "integer", "example": 25 },
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
                 "result": {
                   "type": "array",
-                  "items": { "type": "string", "example": "https://i.pinimg.com/736x/xx/xx/xx.jpg" }
+                  "items": {
+                    "type": "string",
+                    "example": "https://i.pinimg.com/736x/xx/xx/xx.jpg"
+                  }
                 }
               }
             }
@@ -647,28 +654,40 @@
         }
       },
       "400": {
-        "description": "Parameter query tidak lengkap",
+        "description": "Parameter tidak lengkap",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "properties": {
-                "status": { "type": "boolean", "example": false },
-                "error": { "type": "string", "example": "Parameter q wajib diisi" }
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Parameter q wajib diisi"
+                }
               }
             }
           }
         }
       },
       "500": {
-        "description": "Gagal memproses request / server error",
+        "description": "Server error",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "properties": {
-                "status": { "type": "boolean", "example": false },
-                "error": { "type": "string", "example": "Browser launch timeout" }
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Request failed with status code 403"
+                }
               }
             }
           }
@@ -676,7 +695,7 @@
       }
     }
   }
-}
+},
 "/tools/remini": {
   "get": {
     "summary": "Remini AI Image Processing",
