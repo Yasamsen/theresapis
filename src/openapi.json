@@ -613,6 +613,71 @@
     }
   }
 },
+"/tools/remini": {
+  "get": {
+    "summary": "Remini AI Image Processing",
+    "description": "Memproses gambar dari URL menggunakan Remini AI. Method bisa enhance, recolor, atau dehaze.",
+    "tags": ["Tools", "AI"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "url",
+        "required": true,
+        "schema": { "type": "string", "format": "uri" },
+        "description": "URL gambar yang ingin diproses"
+      },
+      {
+        "in": "query",
+        "name": "method",
+        "required": false,
+        "schema": { "type": "string", "enum": ["enhance","recolor","dehaze"], "default": "enhance" },
+        "description": "Jenis proses Remini AI"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil memproses gambar",
+        "content": {
+          "image/jpeg": {
+            "schema": {
+              "type": "string",
+              "format": "binary",
+              "example": "Binary image data"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Request tidak valid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": false },
+                "error": { "type": "string", "example": "URL gambar wajib diisi" }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Gagal memproses request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": false },
+                "error": { "type": "string", "example": "Gagal memproses gambar" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
 "/news/kontan": {
   "get": {
     "summary": "Kontan News",
