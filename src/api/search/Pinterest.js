@@ -1,33 +1,56 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-// Function basic scrape Pinterest
+module.exports = function (app) {
+// Function scrape Pinterest (tanpa cookie, pakai header browser)
 async function Pinterest(query) {
   return new Promise(async (resolve, reject) => {
     try {
-      const { data, status } = await axios.get(
-        "https://id.pinterest.com/search/pins/?autologin=true&q=" + encodeURIComponent(query),
+      const { data } = await axios.get(
+        "https://id.pinterest.com/search/pins/?q=" + encodeURIComponent(query),
         {
           headers: {
-            cookie:
-              '_auth=1; _b="AVna7S1p7l1C5I9u0+nR3YzijpvXOPc6d09SyCzO+DcwpersQH36SmGiYfymBKhZcGg="; _pinterest_sess=TWc9PSZHamJOZ0JobUFiSEpSN3Z4a2NsMk9wZ3gxL1NSc2k2NkFLaUw5bVY5cXR5alZHR0gxY2h2MVZDZlNQalNpUUJFRVR5L3NlYy9JZkthekp3bHo5bXFuaFZzVHJFMnkrR3lTbm56U3YvQXBBTW96VUgzVUhuK1Z4VURGKzczUi9hNHdDeTJ5Y2pBTmxhc2owZ2hkSGlDemtUSnYvVXh5dDNkaDN3TjZCTk8ycTdHRHVsOFg2b2NQWCtpOWxqeDNjNkk3cS85MkhhSklSb0hwTnZvZVFyZmJEUllwbG9UVnpCYVNTRzZxOXNJcmduOVc4aURtM3NtRFo3STlmWjJvSjlWTU5ITzg0VUg1NGhOTEZzME9SNFNhVWJRWjRJK3pGMFA4Q3UvcHBnWHdaYXZpa2FUNkx6Z3RNQjEzTFJEOHZoaHRvazc1c1UrYlRuUmdKcDg3ZEY4cjNtZlBLRTRBZjNYK0lPTXZJTzQ5dU8ybDdVS015bWJKT0tjTWYyRlBzclpiamdsNmtpeUZnRjlwVGJXUmdOMXdTUkFHRWloVjBMR0JlTE5YcmhxVHdoNzFHbDZ0YmFHZ1VLQXU1QnpkM1FqUTNMTnhYb3VKeDVGbnhNSkdkNXFSMXQybjRGL3pyZXRLR0ZTc0xHZ0JvbTJCNnAzQzE0cW1WTndIK0trY05HV1gxS09NRktadnFCSDR2YzBoWmRiUGZiWXFQNjcwWmZhaDZQRm1UbzNxc21pV1p5WDlabm1UWGQzanc1SGlrZXB1bDVDWXQvUis3elN2SVFDbm1DSVE5Z0d4YW1sa2hsSkZJb1h0MTFpck5BdDR0d0lZOW1Pa2RDVzNySWpXWmUwOUFhQmFSVUpaOFQ3WlhOQldNMkExeDIvMjZHeXdnNjdMYWdiQUhUSEFBUlhUVTdBMThRRmh1ekJMYWZ2YTJkNlg0cmFCdnU2WEpwcXlPOVZYcGNhNkZDd051S3lGZmo0eHV0ZE42NW8xRm5aRWpoQnNKNnNlSGFad1MzOHNkdWtER0xQTFN5Z3lmRERsZnZWWE5CZEJneVRlMDd2VmNPMjloK0g5eCswZUVJTS9CRkFweHc5RUh6K1JocGN6clc1JmZtL3JhRE1sc0NMTFlpMVErRGtPcllvTGdldz0=; _ir=0'
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept": "text/html,application/xhtml+xml",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1"
           }
         }
       );
 
-      if (status === 200) {
-        const $ = cheerio.load(data);
-        const result = [];
-        $("div > a").get().map((b) => {
-          const link = $(b).find("img").attr("src");
-          if (link) result.push(link.replace(/236/g, "736"));
-        });
+      const $ = cheerio.load(data);
+      let result = [];
 
-        if (!result.length) return resolve({ developer: "@xorizn", mess: "no result found" });
-        resolve(result);
-      } else {
-        resolve({ developer: "@xorizn", mess: "no result found" });
-      }
+      // 🔥 Cara 1: Ambil dari img langsung
+      $("img").each((i, el) => {
+        const src = $(el).attr("src");
+        if (src && src.includes("i.pinimg.com")) {
+          result.push(src.replace(/236x|474x/g, "736x"));
+        }
+      });
+
+      // 🔥 Cara 2: Ambil dari script JSON (lebih akurat)
+      $("script").each((i, el) => {
+        const json = $(el).html();
+        if (json && json.includes("i.pinimg.com")) {
+          const matches = json.match(/https:\/\/i\.pinimg\.com\/[^"]+/g);
+          if (matches) {
+            result.push(
+              ...matches.map(x => x.replace(/236x|474x/g, "736x"))
+            );
+          }
+        }
+      });
+
+      result = [...new Set(result)];
+
+      if (!result.length)
+        return resolve({ developer: "@xorizn", mess: "no result found" });
+
+      resolve(result);
+
     } catch (err) {
       console.error(err);
       reject(err);
@@ -35,11 +58,15 @@ async function Pinterest(query) {
   });
 }
 
-// Endpoint Express
-module.exports = function (app) {
+// Endpoint
   app.get("/search/Pinterest", async (req, res) => {
     const { q } = req.query;
-    if (!q) return res.status(400).json({ status: false, error: "Parameter q wajib diisi" });
+
+    if (!q)
+      return res.status(400).json({
+        status: false,
+        error: "Parameter q wajib diisi"
+      });
 
     try {
       const data = await Pinterest(q);
