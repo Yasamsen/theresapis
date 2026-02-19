@@ -197,7 +197,7 @@
   "get": {
     "summary": "alya",
     "description": "alya Random Images",
-    "tags": ["anime"],
+    "tags": ["Anime"],
     "responses": {
       "200": {
         "description": "Respon berhasil",
