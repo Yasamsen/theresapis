@@ -3,27 +3,27 @@ const axios = require("axios");
 module.exports = function(app) {
 
     async function alya() {
-        try {
-            // Ambil daftar URL dari GitHub (Alya.json)
-            const { data } = await axios.get(
-                "https://raw.githubusercontent.com/yasamsen/WaifuRandom/main/ImageWaifu.json"
-            );
+    try {
+        // Ambil daftar URL dari GitHub (Alya.json)
+        const { data } = await axios.get(
+            "https://raw.githubusercontent.com/yasamsen/WaifuRandom/main/ImageWaifu.json"
+        );
 
-            if (!data || !Array.isArray(data) || data.length === 0) {
-                throw new Error("No images found");
-            }
-
-            // Pilih random URL
-            const randomUrl = data[Math.floor(Math.random() * data.length)];
-
-            // Ambil gambar sebagai buffer
-            const response = await axios.get(randomUrl, { responseType: "arraybuffer" });
-            return Buffer.from(response.data);
-
-        } catch (error) {
-            throw error;
+        if (!data || !Array.isArray(data.images) || data.images.length === 0) {
+            throw new Error("No images found");
         }
+
+        // Pilih random URL dari data.images
+        const randomUrl = data.images[Math.floor(Math.random() * data.images.length)];
+
+        // Ambil gambar sebagai buffer
+        const response = await axios.get(randomUrl, { responseType: "arraybuffer" });
+        return Buffer.from(response.data);
+
+    } catch (error) {
+        throw error;
     }
+}
 
     app.get("/anime/waifuhen", async (req, res) => {
         try {
