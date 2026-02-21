@@ -415,6 +415,77 @@
     }
   }
 },
+"/download/facebook": {
+  "get": {
+    "summary": "Facebook",
+    "description": "Download video Facebook",
+    "tags": ["Downloader"],
+    "parameters": [
+      {
+        "name": "url",
+        "in": "query",
+        "description": "URL video Facebook yang ingin diunduh",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Respon berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "example": "Judul Video Facebook"
+                    },
+                    "thumbnail": {
+                      "type": "string",
+                      "format": "uri",
+                      "example": "https://example.com/thumb.jpg"
+                    },
+                    "video_sd": {
+                      "type": "string",
+                      "format": "uri",
+                      "example": "https://example.com/video_sd.mp4"
+                    },
+                    "video_hd": {
+                      "type": "string",
+                      "format": "uri",
+                      "example": "https://example.com/video_hd.mp4"
+                    },
+                    "source": {
+                      "type": "string",
+                      "example": "y2date"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "URL tidak disertakan"
+      },
+      "500": {
+        "description": "Gagal memproses request"
+      }
+    }
+  }
+},
 "/image/bluearchive": {
       "get": {
         "summary": "Blue Archive",
