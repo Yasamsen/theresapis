@@ -157,6 +157,80 @@
     }
   }
 },
+"/ai/nana": {
+  "get": {
+    "summary": "Generate Image with Nanana AI",
+    "description": "Mengirim prompt dan path gambar ke Nanana AI, lalu mendapatkan hasil image yang di-generate.",
+    "tags": ["AI"],
+    "parameters": [
+      {
+        "name": "imagePath",
+        "in": "query",
+        "required": true,
+        "description": "Path lokal file gambar yang akan diproses",
+        "schema": { "type": "string", "example": "image.png" }
+      },
+      {
+        "name": "prompt",
+        "in": "query",
+        "required": true,
+        "description": "Teks prompt yang akan digunakan untuk generate image",
+        "schema": { "type": "string", "example": "konser" }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mendapatkan hasil image dari Nanana AI",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": true },
+                "result": {
+                  "type": "object",
+                  "example": {
+                    "request_id": "abc123",
+                    "completed": true,
+                    "url": "https://nanana.app/generated/abc123.png"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Request invalid, imagePath atau prompt kosong",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": false },
+                "error": { "type": "string", "example": "imagePath dan prompt wajib diisi" }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Gagal memproses request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": false },
+                "error": { "type": "string", "example": "Gagal memproses request" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
 "/anime/waifu": {
   "get": {
     "summary": "Waifu",
