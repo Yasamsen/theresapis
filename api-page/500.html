@@ -1,39 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>404</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-        <title>404</title>
-        <style>
-            * {
-                color: #333;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>500</title>
+    <style>
+        * {
+            color: #333;
+        }
+        body, html {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #fff, #f3f4f6);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .bg-divider {
+            background-color: #9ca3af;
+        }
+        .w-divider {
+            width: 2px;
+        }
+
+        /* Animasi halus */
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
             }
-            body, html {
-                height: 100%;
-                overflow: hidden;
-                margin: 0;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background-color: white;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
-            .bg-divider {
-                background-color: #333;
-            }
-            .w-divider {
-                width: 1px;
-            }
-        </style>
-    </head>
-    <body class="font-sans antialiased">
-        <div class="flex flex-col items-center justify-center h-screen text-white">
-            <div class="flex h-5 items-center space-x-4">
-                <h1 class="text-4xl font-bold" style="color: #333">500</h1>
-                <div class="shrink-0 bg-divider border-none h-full w-divider" role="separator"></div>
-                <h2 style="color: #333">There Is Something Wrong-!!</h2>
-            </div>
+        }
+
+        /* Efek glitch dikit buat 500 */
+        .glitch {
+            position: relative;
+            color: #111;
+        }
+        .glitch::before,
+        .glitch::after {
+            content: "500";
+            position: absolute;
+            left: 0;
+        }
+        .glitch::before {
+            animation: glitchTop 1s infinite linear;
+            color: #ef4444;
+            clip-path: inset(0 0 50% 0);
+        }
+        .glitch::after {
+            animation: glitchBottom 1s infinite linear;
+            color: #3b82f6;
+            clip-path: inset(50% 0 0 0);
+        }
+        @keyframes glitchTop {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(2px,-2px); }
+            100% { transform: translate(0,0); }
+        }
+        @keyframes glitchBottom {
+            0% { transform: translate(0,0); }
+            50% { transform: translate(-2px,2px); }
+            100% { transform: translate(0,0); }
+        }
+
+        .sub-text {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+    <div class="flex flex-col items-center justify-center h-screen text-white fade-in">
+        <div class="flex h-5 items-center space-x-4">
+            <h1 class="text-5xl font-extrabold glitch">500</h1>
+            <div class="shrink-0 bg-divider border-none h-full w-divider" role="separator"></div>
+            <h2 style="color: #374151" class="text-lg font-medium">Internal Server Error</h2>
         </div>
-    </body>
+
+        <p class="sub-text">Ups... server lagi bermasalah, coba lagi nanti ya 😣</p>
+
+        <a href="/" class="mt-6 px-4 py-2 bg-gray-900 text-white rounded-xl shadow hover:bg-gray-700 transition duration-300">
+            Reload
+        </a>
+    </div>
+</body>
 </html>
