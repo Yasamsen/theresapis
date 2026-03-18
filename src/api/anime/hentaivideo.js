@@ -16,7 +16,7 @@ module.exports = function(app) {
         return list[Math.floor(Math.random() * list.length)];
     }
 
-    app.get("/anime/waifuhen", async (req, res) => {
+    app.get("/anime/hentaivideo", async (req, res) => {
         try {
             const videoUrl = await alya();
 
