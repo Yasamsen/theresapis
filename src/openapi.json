@@ -94,6 +94,107 @@
     }
   }
 },
+"/ai/wink": {
+  "get": {
+    "summary": "Wink AI Enhancer",
+    "description": "Enhance gambar menjadi HD / Ultra HD menggunakan wink.ai",
+    "tags": ["AI Tools"],
+    "parameters": [
+      {
+        "name": "file",
+        "in": "query",
+        "description": "Path file lokal gambar",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "./test.jpg"
+        }
+      },
+      {
+        "name": "type",
+        "in": "query",
+        "description": "Jenis enhancement",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": ["hd", "ultra"],
+          "default": "hd"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "task": {
+                      "type": "string",
+                      "example": "HD Image"
+                    },
+                    "input": {
+                      "type": "string",
+                      "example": "test.jpg"
+                    },
+                    "output": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string",
+                          "format": "uri",
+                          "example": "https://cdn.wink.ai/result.jpg"
+                        },
+                        "thumbnail": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "example": 1024
+                        },
+                        "height": {
+                          "type": "integer",
+                          "example": 1024
+                        },
+                        "size": {
+                          "type": "string",
+                          "example": "1.2MB"
+                        }
+                      }
+                    },
+                    "performance": {
+                      "type": "object",
+                      "description": "Data performa AI"
+                    },
+                    "source": {
+                      "type": "string",
+                      "example": "wink.ai"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak valid"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    }
+  }
+},
 "/ai/venice": {
   "get": {
     "summary": "Venice AI Chat",
