@@ -1,18 +1,12 @@
+"use strict";
 
-
-/**
- * wink.ai - Hann Universe
- * Free tools only: HD Image (高清) & Ultra HD Image (超清)
- */
-
-'use strict';
-
-const axios    = require('axios');
-const FormData = require('form-data');
-const fs       = require('fs-extra');
-const path     = require('path');
-const qs       = require('qs');
-const { v4: uuidv4 } = require('uuid');
+const express  = require("express");
+const path     = require("path");
+const fs       = require("fs");
+const axios    = require("axios");
+const FormData = require("form-data");
+const qs       = require("qs");
+const { v4: uuidv4 } = require("uuid");
 
 const API = {
   BASE:     'https://wink.ai',
@@ -26,20 +20,13 @@ const CLIENT = {
   LANGUAGE: 'en_US',
 };
 
-// Only 2 tool free (限免): 高清 & 超清
 const TASK = {
-  HD:       { type: 2,  label: 'HD Image',       content_type: 1, beans: 2, free: true  },
-  ULTRA_HD: { type: 12, label: 'Ultra HD Image',  content_type: 1, beans: 4, free: true  },
+  HD:       { type: 2,  label: 'HD Image',       content_type: 1, free: true },
+  ULTRA_HD: { type: 12, label: 'Ultra HD Image',  content_type: 1, free: true },
 };
 
-const TYPE_PARAMS = {
-  is_mirror: 0, orientation_tag: 1, j_420_trans: '1', return_ext: '2',
-};
-
-const RIGHT_DETAIL = {
-  source: '4', touch_type: '4', function_id: '630', material_id: '63001',
-};
-
+const TYPE_PARAMS = { is_mirror: 0, orientation_tag: 1, j_420_trans: '1', return_ext: '2' };
+const RIGHT_DETAIL = { source: '4', touch_type: '4', function_id: '630', material_id: '63001' };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 function loadOrCreateGnum() {
@@ -55,25 +42,25 @@ function loadOrCreateGnum() {
 
 class WinkClient {
   constructor(opts = {}) {
-    this.outputDir = opts.outputDir || './_wink';
+    this.outputDir = opts.outputDir || '/tmp';
     this.gnum      = loadOrCreateGnum();
     this.country   = opts.country  || 'ID';
     this.timezone  = opts.timezone || 'Asia/Jakarta';
     this._timing   = {};
 
-    fs.ensureDirSync(this.outputDir);
+    fs.existsSync(this.outputDir) || fs.mkdirSync(this.outputDir, { recursive: true });
 
     this.http = axios.create({
       baseURL: API.BASE,
       timeout: 60_000,
       headers: {
-        'Accept':          'application/json, text/plain, */*',
+        'Accept': 'application/json, text/plain, */*',
         'Accept-Language': 'en-US,en;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
-        'Origin':          API.BASE,
-        'Referer':         `${API.BASE}/`,
-        'User-Agent':      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-      },
+        'Origin': API.BASE,
+        'Referer': `${API.BASE}/`,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36'
+      }
     });
 
     this.http.interceptors.response.use(null, async err => {
@@ -88,447 +75,106 @@ class WinkClient {
     });
   }
 
-  _p(extra = {}) {
-    return {
-      client_id:         CLIENT.ID,
-      version:           CLIENT.VERSION,
-      country_code:      this.country,
-      gnum:              this.gnum,
-      client_language:   CLIENT.LANGUAGE,
-      client_channel_id: '',
-      client_timezone:   this.timezone,
-      ...extra,
-    };
-  }
-
-  _t(name)     { this._timing[name] = { start: Date.now() }; }
-  _te(name)    { if (this._timing[name]) this._timing[name].ms = Date.now() - this._timing[name].start; }
+  _p(extra = {}) { return { client_id: CLIENT.ID, version: CLIENT.VERSION, country_code: this.country, gnum: this.gnum, client_language: CLIENT.LANGUAGE, client_channel_id:'', client_timezone: this.timezone, ...extra }; }
+  _t(name){ this._timing[name] = { start: Date.now() }; }
+  _te(name){ if(this._timing[name]) this._timing[name].ms = Date.now() - this._timing[name].start; }
 
   async init() {
     this._t('init');
     const p = this._p();
-
     const [initRes, taskTypeRes, groupRes] = await Promise.allSettled([
-      this.http.get('/api/init.json',                           { params: p }),
-      this.http.get('/api/meitu_ai/task_type_config.json',      { params: p }),
-      this.http.get('/api/meitu_ai_task_group/get_config.json', { params: p }),
+      this.http.get('/api/init.json',{ params: p }),
+      this.http.get('/api/meitu_ai/task_type_config.json',{ params: p }),
+      this.http.get('/api/meitu_ai_task_group/get_config.json',{ params: p })
     ]);
-
     const safe = r => r.status === 'fulfilled' ? r.value.data?.data : null;
-
     this._te('init');
-    return {
-      platform:       safe(initRes),
-      task_types:     safe(taskTypeRes) || [],
-      task_group:     safe(groupRes),
-    };
+    return { platform: safe(initRes), task_types: safe(taskTypeRes)||[], task_group: safe(groupRes) };
   }
 
   async uploadFile(filePath) {
     this._t('upload');
-
     if (!fs.existsSync(filePath)) throw new Error(`File not found: ${filePath}`);
-
     const ext  = path.extname(filePath).toLowerCase() || '.jpg';
     const stat = fs.statSync(filePath);
-
-    const validImg = ['.jpg', '.jpeg', '.png', '.webp', '.bmp', '.gif'];
-    if (!validImg.includes(ext)) throw new Error(`Unsupported format: ${ext}. Supported: ${validImg.join(', ')}`);
-
-    const signRes = await this.http.get('/api/file/get_maat_sign.json', {
-      params: this._p({ suffix: ext, type: 'temp', count: 1 }),
-    });
+    const validImg = ['.jpg','.jpeg','.png','.webp','.bmp','.gif'];
+    if (!validImg.includes(ext)) throw new Error(`Unsupported format: ${ext}`);
+    const signRes = await this.http.get('/api/file/get_maat_sign.json',{ params: this._p({ suffix: ext, type:'temp', count:1 }) });
     const sign = signRes.data?.data;
-    if (!sign?.sig) throw new Error('Failed to get upload signature');
-
-    const policyRes = await axios.get(`${API.STRATEGY}/upload/policy`, {
-      params: {
-        app:        sign.app || 'wink',
-        count:      1,
-        sig:        sign.sig,
-        sigTime:    sign.sig_time,
-        sigVersion: sign.sig_version,
-        suffix:     ext,
-        type:       'temp',
-      },
-      timeout: 15_000,
-    });
+    if(!sign?.sig) throw new Error('Failed to get upload signature');
+    const policyRes = await axios.get(`${API.STRATEGY}/upload/policy`,{ params:{ app:sign.app||'wink', count:1, sig:sign.sig, sigTime:sign.sig_time, sigVersion:sign.sig_version, suffix:ext, type:'temp' }, timeout:15000 });
     const qiniu = policyRes.data?.[0]?.qiniu;
-    if (!qiniu?.token) throw new Error('Failed to get Qiniu policy');
-
+    if(!qiniu?.token) throw new Error('Failed to get Qiniu policy');
     const form = new FormData();
     form.append('token', qiniu.token);
-    form.append('key',   qiniu.key);
-    form.append('file',  fs.createReadStream(filePath), {
-      filename:    path.basename(filePath),
-      contentType: `image/${ext.replace('.', '').replace('jpg', 'jpeg')}`,
-    });
-
-    const uploadRes = await axios.post(qiniu.url || API.QINIU, form, {
-      headers:           form.getHeaders(),
-      timeout:           300_000,
-      maxBodyLength:     Infinity,
-      maxContentLength:  Infinity,
-    });
+    form.append('key', qiniu.key);
+    form.append('file', fs.createReadStream(filePath), { filename:path.basename(filePath), contentType:`image/${ext.replace('.','').replace('jpg','jpeg')}` });
+    const uploadRes = await axios.post(qiniu.url||API.QINIU, form, { headers:form.getHeaders(), timeout:300_000, maxBodyLength:Infinity, maxContentLength:Infinity });
     const uploaded = uploadRes.data;
-    if (!uploaded?.url) throw new Error('Qiniu upload returned no URL');
-
-    const metaRes = await this.http.post('/api/file/meta_info.json',
-      qs.stringify({ ...this._p(), file_key: qiniu.key }),
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    );
+    if(!uploaded?.url) throw new Error('Qiniu upload returned no URL');
+    const metaRes = await this.http.post('/api/file/meta_info.json', qs.stringify({ ...this._p(), file_key: qiniu.key }), { headers:{ 'Content-Type':'application/x-www-form-urlencoded' } });
     const meta = metaRes.data?.data;
-
     this._te('upload');
-    return {
-      fileKey:   qiniu.key,
-      fileUrl:   uploaded.url,
-      etag:      uploaded.etag,
-      localPath: filePath,
-      fileName:  path.basename(filePath),
-      localSize: stat.size,
-      storage: {
-        bucket: qiniu.bucket,
-        key:    qiniu.key,
-        url:    qiniu.url,
-        ttl:    qiniu.ttl,
-      },
-      sign: {
-        sig:        sign.sig,
-        sig_time:   sign.sig_time,
-        sig_version:sign.sig_version,
-      },
-      meta: {
-        width:      meta?.width,
-        height:     meta?.height,
-        format:     meta?.format,
-        fileSize:   meta?.fileSize,
-        colorModel: meta?.colorModel,
-        frameNumber:meta?.frameNumber,
-      },
-    };
+    return { fileKey:qiniu.key, fileUrl:uploaded.url, localPath:filePath, fileName:path.basename(filePath), localSize:stat.size, meta };
   }
 
   async submitTask(upload, taskCfg) {
     this._t('submit');
-
-    const beansBody = qs.stringify({
-      ...this._p(),
-      item_list: JSON.stringify([{
-        type:         taskCfg.type,
-        ext_value:    '1',
-        content_type: taskCfg.content_type,
-        duration:     0,
-        type_params:  JSON.stringify(TYPE_PARAMS),
-        right_detail: JSON.stringify(RIGHT_DETAIL),
-      }]),
-    });
-    const beansRes = await this.http.post('/api/subscribe/batch_calc_need_beans.json',
-      beansBody, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    );
+    const beansBody = qs.stringify({ ...this._p(), item_list:JSON.stringify([{ type:taskCfg.type, ext_value:'1', content_type:taskCfg.content_type, duration:0, type_params:JSON.stringify(TYPE_PARAMS), right_detail:JSON.stringify(RIGHT_DETAIL) }]) });
+    const beansRes = await this.http.post('/api/subscribe/batch_calc_need_beans.json', beansBody, { headers:{ 'Content-Type':'application/x-www-form-urlencoded' } });
     const beans = beansRes.data?.data || {};
-
-    const taskName = `${taskCfg.label.replace(/\s+/g, '_')}-${uuidv4().replace(/-/g,'').slice(0,16)}`;
-
-    const body = qs.stringify({
-      ...this._p(),
-      type:         taskCfg.type,
-      source_url:   upload.fileUrl,
-      content_type: taskCfg.content_type,
-      ext_params:   JSON.stringify({ task_name: taskName, records: '2' }),
-      type_params:  JSON.stringify(TYPE_PARAMS),
-      right_detail: JSON.stringify(RIGHT_DETAIL),
-      with_prepare: 1,
-    });
-
-    const res = await this.http.post('/api/meitu_ai/delivery.json', body, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
-
+    const taskName = `${taskCfg.label.replace(/\s+/g,'_')}-${uuidv4().replace(/-/g,'').slice(0,16)}`;
+    const body = qs.stringify({ ...this._p(), type:taskCfg.type, source_url:upload.fileUrl, content_type:taskCfg.content_type, ext_params:JSON.stringify({ task_name:taskName, records:'2' }), type_params:JSON.stringify(TYPE_PARAMS), right_detail:JSON.stringify(RIGHT_DETAIL), with_prepare:1 });
+    const res = await this.http.post('/api/meitu_ai/delivery.json', body, { headers:{ 'Content-Type':'application/x-www-form-urlencoded' } });
     const delivery = res.data?.data;
-    if (!delivery?.prepare_msg_id) throw new Error('No prepare_msg_id from delivery');
-
+    if(!delivery?.prepare_msg_id) throw new Error('No prepare_msg_id from delivery');
     this._te('submit');
-    return {
-      prepareMsgId:   delivery.prepare_msg_id,
-      predictElapsed: delivery.predict_elapsed,
-      errorCode:      delivery.error_code,
-      taskName,
-      taskCfg,
-      beans: {
-        required:    beans.beans_not_vip_without_free,
-        requiredVip: beans.beans_vip_without_free,
-        isFree:      beans.free_type === 1,
-        freeType:    beans.free_type,
-        freeId:      beans.beans_detail?.[0]?.free_id,
-        freeNum:     beans.func_free_detail?.[0]?.free_num,
-        usedNum:     beans.func_free_detail?.[0]?.use_num,
-        totalNum:    beans.func_free_detail?.[0]?.total_num,
-      },
-    };
+    return { prepareMsgId: delivery.prepare_msg_id, taskName, beans };
   }
 
-  async waitForResult(task, pollMs = 2000, timeoutMs = 300_000) {
+  async waitForResult(task, pollMs=2000, timeoutMs=300_000) {
     this._t('poll');
-    const deadline = Date.now() + timeoutMs;
-    let   msgId    = task.prepareMsgId;
-    let   attempt  = 0;
-    const log      = [];
-
-    while (Date.now() < deadline) {
+    const deadline = Date.now()+timeoutMs;
+    let msgId = task.prepareMsgId, attempt=0;
+    while(Date.now()<deadline){
       attempt++;
-      await sleep(attempt === 1 ? 800 : pollMs);
-
+      await sleep(attempt===1?800:pollMs);
       let res;
-      try {
-        res = await this.http.get('/api/meitu_ai/query_batch.json', {
-          params: { ...this._p(), msg_ids: msgId },
-        });
-      } catch { continue; }
-
-      const item    = res.data?.data?.item_list?.[0];
-      const elapsed = Date.now() - this._timing.poll.start;
-
-      if (!item) { log.push({ attempt, state: 'empty', elapsed }); continue; }
-
-      if (msgId.startsWith('wpr_')) {
-        const realId = item.result?.result;
-        if (realId && realId !== msgId) {
-          log.push({ attempt, state: 'prepare_resolved', prepareMsgId: msgId, realMsgId: realId, elapsed });
-          msgId = realId;
-        } else {
-          log.push({ attempt, state: 'prepare_pending', elapsed });
-        }
-        continue;
-      }
-
-      const errCode = item.result?.error_code;
-      const errMsg  = item.result?.error_msg;
-      if (errCode && errCode !== 0) {
-        this._te('poll');
-        throw Object.assign(new Error(`AI error [${errCode}]: ${errMsg}`), { errCode, errMsg, pollLog: log });
-      }
-
+      try{ res = await this.http.get('/api/meitu_ai/query_batch.json',{ params:{ ...this._p(), msg_ids:msgId } }); } catch { continue; }
+      const item = res.data?.data?.item_list?.[0];
+      if(!item) continue;
       const media = item.result?.media_info_list;
-      if (media?.length && media[0].media_data) {
-        log.push({ attempt, state: 'done', elapsed });
-        this._te('poll');
-
-        return {
-          msgId,
-          taskName: item.task_name,
-          typeName: item.type_name,
-          pollLog:  log,
-          media: {
-            url:       media[0].media_data,
-            thumbUrl:  media[0].thumb_pic,
-            coverUrl:  media[0].cover_pic,
-            width:     item.width,
-            height:    item.height,
-            oriWidth:  item.ori_width,
-            oriHeight: item.ori_height,
-            size:      item.size,
-            sizeHuman: item.size_human,
-          },
-          performance: {
-            algoMs:      item.result?.duration?.alg_process_time,
-            waitMs:      item.result?.duration?.waiting_time,
-            uploadMs:    item.result?.duration?.upload_time,
-            predictMs:   item.predict_elapsed,
-            totalPollMs: elapsed,
-            attempts:    attempt,
-            algoVersion: item.result?.parameter?.version,
-            algoTime:    item.result?.extra?.algo_msg?.alg_time,
-          },
-          rawResult: {
-            errorCode: item.result?.error_code,
-            errorMsg:  item.result?.error_msg,
-            parameter: item.result?.parameter,
-            duration:  item.result?.duration,
-            bizPerf:   item.result?.biz_performance_data,
-          },
-        };
-      }
-
-      log.push({ attempt, state: 'processing', algoMs: item.result?.duration?.alg_process_time || 0, elapsed });
+      if(media?.length && media[0].media_data){ this._te('poll'); return { msgId, media:{ url:media[0].media_data, thumbUrl:media[0].thumb_pic, coverUrl:media[0].cover_pic, width:item.width, height:item.height, size:item.size, sizeHuman:item.size_human } }; }
     }
-
-    this._te('poll');
-    throw Object.assign(new Error(`Timeout after ${timeoutMs}ms`), { pollLog: log });
-  }
-
-  async downloadResult(url, outFilename) {
-    this._t('download');
-    const outPath = path.join(this.outputDir, outFilename);
-
-    const res = await axios.get(url, {
-      responseType: 'stream',
-      timeout:      120_000,
-      headers:      { 'Referer': API.BASE },
-    });
-
-    await new Promise((ok, fail) => {
-      const w = fs.createWriteStream(outPath);
-      res.data.pipe(w);
-      w.on('finish', ok);
-      w.on('error', fail);
-    });
-
-    const diskSize = fs.statSync(outPath).size;
-    this._te('download');
-    return { outPath, diskSize };
-  }
-
-  buildReport({ initData, upload, task, result, download }) {
-    return {
-      meta: {
-        generatedAt: new Date().toISOString(),
-        gnum:        this.gnum,
-        clientId:    CLIENT.ID,
-        version:     CLIENT.VERSION,
-        country:     this.country,
-        timezone:    this.timezone,
-      },
-      timing: {
-        initMs:     this._timing.init?.ms,
-        uploadMs:   this._timing.upload?.ms,
-        submitMs:   this._timing.submit?.ms,
-        pollMs:     this._timing.poll?.ms,
-        downloadMs: this._timing.download?.ms,
-        totalMs:    Object.values(this._timing).reduce((s, v) => s + (v.ms || 0), 0),
-      },
-      platform: {
-        countryCode:       initData?.platform?.country_code,
-        taskGroupMaxCount: initData?.task_group?.max_executing_count,
-        taskGroupSubtasks: initData?.task_group?.max_subtask_count,
-        availableTaskTypes:initData?.task_types?.map(t => ({
-          name:      t.name,
-          task_type: t.task_type,
-          vipNeeded: !!t.task_group_need_vip,
-          desc:      t.index_desc,
-        })),
-      },
-      input: {
-        filePath:  upload?.localPath,
-        fileName:  upload?.fileName,
-        localSize: upload?.localSize,
-        meta:      upload?.meta,
-      },
-      upload: {
-        fileKey:  upload?.fileKey,
-        fileUrl:  upload?.fileUrl,
-        etag:     upload?.etag,
-        storage:  upload?.storage,
-        sign:     upload?.sign,
-      },
-      task: {
-        name:         task?.taskName,
-        type:         task?.taskCfg?.type,
-        typeLabel:    task?.taskCfg?.label,
-        contentType:  task?.taskCfg?.content_type,
-        prepareMsgId: task?.prepareMsgId,
-        predictMs:    task?.predictElapsed,
-        beans:        task?.beans,
-      },
-      result: {
-        msgId:       result?.msgId,
-        typeName:    result?.typeName,
-        taskName:    result?.taskName,
-        media:       result?.media,
-        performance: result?.performance,
-        raw:         result?.rawResult,
-        pollLog:     result?.pollLog,
-      },
-      output: {
-        path:     download?.outPath,
-        diskSize: download?.diskSize,
-      },
-    };
+    this._te('poll'); throw new Error('Timeout waiting result');
   }
 }
 
-const INPUT_FILE = './test.jpg';
-const SELECTED_TASK = TASK.HD;
-const OUTPUT_DIR    = './_wink';
+// ==================== ROUTE LANANG ====================
+const app = express();
 
-async function run() {
-  const client = new WinkClient({ outputDir: OUTPUT_DIR });
+app.get("/ai/wink", async (req, res) => {
+  const { image, type = "hd" } = req.query;
+  if (!image) return res.status(400).json({ status:false, creator:"yasamDev", error:"Parameter image wajib" });
+  try {
+    const client = new WinkClient({ outputDir:"/tmp" });
+    const TASK_SELECT = { hd:TASK.HD, ultra:TASK.ULTRA_HD };
+    const selectedTask = TASK_SELECT[type.toLowerCase()];
+    if(!selectedTask) return res.status(400).json({ status:false, error:"Type hanya hd/ultra" });
 
-  const initData = await client.init();
-  const upload   = await client.uploadFile(INPUT_FILE);
-  const task     = await client.submitTask(upload, SELECTED_TASK);
-  const result   = await client.waitForResult(task);
+    // download image
+    const tmpPath = `/tmp/${Date.now()}.jpg`;
+    const response = await axios({ url:image, method:"GET", responseType:"stream" });
+    await new Promise((ok,fail)=>{ const w=fs.createWriteStream(tmpPath); response.data.pipe(w); w.on('finish',ok); w.on('error',fail); });
 
-  const ext     = result.media?.url?.match(/\.(jpe?g|png|webp)/i)?.[1] || 'jpg';
-  const outName = `${path.basename(INPUT_FILE, path.extname(INPUT_FILE))}_${SELECTED_TASK.label.replace(/\s+/g,'_').toLowerCase()}.${ext}`;
-  const download = await client.downloadResult(result.media.url, outName);
+    const initData = await client.init();
+    const upload   = await client.uploadFile(tmpPath);
+    const task     = await client.submitTask(upload, selectedTask);
+    const result   = await client.waitForResult(task);
 
-  const report = client.buildReport({ initData, upload, task, result, download });
-  process.stdout.write(JSON.stringify(report, null, 2) + '\n');
-}
+    res.status(200).json({ status:true, creator:"yasamDev", result:{ type:selectedTask.label, input:image, output:result.media?.url, thumb:result.media?.thumbUrl, size:result.media?.sizeHuman, width:result.media?.width, height:result.media?.height } });
 
-// paste class WinkClient + semua const (API, TASK, dll) DI ATAS sini
-// HAPUS bagian run()
-
-module.exports = function (app) {
-
-  app.get("/ai/wink", async (req, res) => {
-    const { file, type = "hd" } = req.query;
-
-    if (!file) {
-      return res.status(400).json({
-        status: false,
-        error: "file is required (path local image)"
-      });
-    }
-
-    try {
-      const client = new WinkClient({
-        outputDir: "./_wink"
-      });
-
-      const taskMap = {
-        hd: TASK.HD,
-        ultra: TASK.ULTRA_HD
-      };
-
-      const selectedTask = taskMap[type.toLowerCase()];
-      if (!selectedTask) {
-        return res.status(400).json({
-          status: false,
-          error: "type harus hd / ultra"
-        });
-      }
-
-      const initData = await client.init();
-      const upload   = await client.uploadFile(file);
-      const task     = await client.submitTask(upload, selectedTask);
-      const result   = await client.waitForResult(task);
-
-      res.status(200).json({
-        status: true,
-        result: {
-          task: selectedTask.label,
-          input: upload.fileName,
-          output: {
-            url: result.media.url,
-            thumbnail: result.media.thumbUrl,
-            width: result.media.width,
-            height: result.media.height,
-            size: result.media.sizeHuman
-          },
-          performance: result.performance,
-          source: "wink.ai"
-        }
-      });
-
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        status: false,
-        error: err.message
-      });
-    }
-  });
-
-};
+  } catch(err) {
+    res.status(500).json({ status:false, creator:"yasamDev", error:err.message });
+  }
+});
