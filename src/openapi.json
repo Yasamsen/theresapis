@@ -96,24 +96,25 @@
 },
 "/ai/wink": {
   "get": {
-    "summary": "Wink AI Enhancer",
-    "description": "Enhance gambar menjadi HD / Ultra HD menggunakan wink.ai",
-    "tags": ["AI Tools"],
+    "summary": "Wink.ai Image Enhancement",
+    "description": "Enhance an image using Wink.ai tools (HD / Ultra HD). Input image via URL query parameter.",
+    "tags": ["AI Image"],
     "parameters": [
       {
-        "name": "file",
+        "name": "image",
         "in": "query",
-        "description": "Path file lokal gambar",
+        "description": "URL of the input image",
         "required": true,
         "schema": {
           "type": "string",
-          "example": "./test.jpg"
+          "format": "uri",
+          "example": "https://example.com/input.jpg"
         }
       },
       {
         "name": "type",
         "in": "query",
-        "description": "Jenis enhancement",
+        "description": "Enhancement type, either 'hd' or 'ultra'",
         "required": false,
         "schema": {
           "type": "string",
@@ -124,61 +125,24 @@
     ],
     "responses": {
       "200": {
-        "description": "Berhasil",
+        "description": "Berhasil memproses gambar",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
+                "status": { "type": "boolean", "example": true },
+                "creator": { "type": "string", "example": "yasamDev" },
                 "result": {
                   "type": "object",
                   "properties": {
-                    "task": {
-                      "type": "string",
-                      "example": "HD Image"
-                    },
-                    "input": {
-                      "type": "string",
-                      "example": "test.jpg"
-                    },
-                    "output": {
-                      "type": "object",
-                      "properties": {
-                        "url": {
-                          "type": "string",
-                          "format": "uri",
-                          "example": "https://cdn.wink.ai/result.jpg"
-                        },
-                        "thumbnail": {
-                          "type": "string",
-                          "format": "uri"
-                        },
-                        "width": {
-                          "type": "integer",
-                          "example": 1024
-                        },
-                        "height": {
-                          "type": "integer",
-                          "example": 1024
-                        },
-                        "size": {
-                          "type": "string",
-                          "example": "1.2MB"
-                        }
-                      }
-                    },
-                    "performance": {
-                      "type": "object",
-                      "description": "Data performa AI"
-                    },
-                    "source": {
-                      "type": "string",
-                      "example": "wink.ai"
-                    }
+                    "type": { "type": "string", "example": "HD Image" },
+                    "input": { "type": "string", "format": "uri", "example": "https://example.com/input.jpg" },
+                    "output": { "type": "string", "format": "uri", "example": "https://example.com/output.jpg" },
+                    "thumb": { "type": "string", "format": "uri", "example": "https://example.com/thumb.jpg" },
+                    "size": { "type": "string", "example": "1.2 MB" },
+                    "width": { "type": "integer", "example": 1024 },
+                    "height": { "type": "integer", "example": 768 }
                   }
                 }
               }
@@ -187,10 +151,34 @@
         }
       },
       "400": {
-        "description": "Parameter tidak valid"
+        "description": "Parameter image tidak valid / kosong",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": false },
+                "creator": { "type": "string", "example": "yasamDev" },
+                "error": { "type": "string", "example": "Parameter image wajib" }
+              }
+            }
+          }
+        }
       },
       "500": {
-        "description": "Server error"
+        "description": "Terjadi kesalahan server saat memproses gambar",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": false },
+                "creator": { "type": "string", "example": "yasamDev" },
+                "error": { "type": "string", "example": "Timeout waiting result" }
+              }
+            }
+          }
+        }
       }
     }
   }
