@@ -516,6 +516,93 @@
     }
   }
 },
+{
+  "/download/youtube": {
+    "get": {
+      "summary": "YouTube",
+      "description": "Download video/audio dari YouTube",
+      "tags": ["Downloader"],
+      "parameters": [
+        {
+          "name": "url",
+          "in": "query",
+          "description": "URL video YouTube",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        {
+          "name": "format",
+          "in": "query",
+          "description": "Format output",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "enum": ["mp3", "mp4", "m4a", "webm"],
+            "default": "mp3"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Berhasil",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "result": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "example": "Judul Video YouTube"
+                      },
+                      "videoId": {
+                        "type": "string",
+                        "example": "dQw4w9WgXcQ"
+                      },
+                      "format": {
+                        "type": "string",
+                        "example": "mp3"
+                      },
+                      "download": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/file.mp3"
+                      },
+                      "progress_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/progress"
+                      },
+                      "source": {
+                        "type": "string",
+                        "example": "ytmp3.gs"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "URL tidak valid / kosong"
+        },
+        "500": {
+          "description": "Server error"
+        }
+      }
+    }
+  }
+},
 "/download/facebook": {
   "get": {
     "summary": "Facebook",
