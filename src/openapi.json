@@ -515,8 +515,8 @@
       "500": { "description": "Gagal memproses request" }
     }
   }
+}
 },
-{
   "/download/youtube": {
     "get": {
       "summary": "YouTube",
