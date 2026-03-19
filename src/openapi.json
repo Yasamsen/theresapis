@@ -515,7 +515,6 @@
       "500": { "description": "Gagal memproses request" }
     }
   }
-}
 },
   "/download/youtube": {
     "get": {
@@ -601,8 +600,7 @@
         }
       }
     }
-  }
-},
+  },
 "/download/facebook": {
   "get": {
     "summary": "Facebook",
