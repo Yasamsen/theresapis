@@ -1,5 +1,3 @@
-"use strict";
-
 function extractVideoId(input) {
   if (!input) throw new Error("No input");
 
