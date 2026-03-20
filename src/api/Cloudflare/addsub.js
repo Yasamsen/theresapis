@@ -2,23 +2,23 @@ const axios = require("axios");
 
 module.exports = function (app) {
 
-  app.get("/cloudflare/addsub", async (req, res) => {
-    const { ip, sub, proxy = "off" } = req.query;
+  app.get("/cloudflare/dns", async (req, res) => {
+    const { type = "A", name, content, proxy = "off" } = req.query;
 
-    if (!ip || !sub) {
+    if (!name || !content) {
       return res.status(400).json({
         status: false,
-        error: "ip dan sub wajib diisi",
+        error: "name dan content wajib diisi",
       });
     }
 
     const proxied = proxy === "on";
-    const domain = `${sub}.yasamdev.web.id`;
-    const zone = '45c900cd8ce4bf53b319e268d241d856';
-    const apiToken = 'e8sq4CK7Sf3LTnn8xDlm4i0mfLNxTN-vok4nJTMe';
+    const domain = `${name}.yasamdev.web.id`;
+    const zone = "45c900cd8ce4bf53b319e268d241d856";
+    const apiToken = "ISI_API_TOKEN_KAMU";
 
     try {
-      // cek DNS record dulu
+      // cek DNS dulu
       const check = await axios.get(
         `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records?name=${domain}`,
         {
@@ -27,60 +27,78 @@ module.exports = function (app) {
       );
 
       if (check.data.result.length > 0) {
-        // update proxy
         const record = check.data.result[0];
 
-        const update = await axios.patch(
+        const update = await axios.put(
           `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records/${record.id}`,
-          { proxied: proxied },
-          { headers: { Authorization: `Bearer ${apiToken}`, "Content-Type": "application/json" } }
+          {
+            type,
+            name,
+            content,
+            ttl: 1,
+            proxied
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${apiToken}`,
+              "Content-Type": "application/json"
+            }
+          }
         );
 
-        return res.status(200).json({
+        return res.json({
           status: true,
           result: {
             domain,
+            type,
+            content,
             proxied,
             action: "updated",
-            cloudflareResponse: update.data // debug lengkap
+            cloudflareResponse: update.data
           }
         });
 
       } else {
-        // create baru
+
         const create = await axios.post(
           `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records`,
           {
-            type: "A",
-            name: sub,
-            content: ip,
+            type,
+            name,
+            content,
             ttl: 1,
-            proxied: proxied
+            proxied
           },
-          { headers: { Authorization: `Bearer ${apiToken}`, "Content-Type": "application/json" } }
+          {
+            headers: {
+              Authorization: `Bearer ${apiToken}`,
+              "Content-Type": "application/json"
+            }
+          }
         );
 
-        return res.status(200).json({
+        return res.json({
           status: true,
           result: {
             domain,
-            ip,
+            type,
+            content,
             proxied,
             action: "created",
-            cloudflareResponse: create.data // debug lengkap
+            cloudflareResponse: create.data
           }
         });
+
       }
 
     } catch (err) {
-      // debug lebih lengkap
-      console.error("Cloudflare API error:", err.response?.data || err.message);
+      console.error(err.response?.data || err.message);
 
       res.status(500).json({
         status: false,
         creator: "yasamDev",
-        error: err.response?.data?.errors?.[0]?.message || err.message || "Cloudflare API error",
-        details: err.response?.data || null // debug detail
+        error: err.response?.data?.errors?.[0]?.message || err.message,
+        details: err.response?.data || null
       });
     }
 

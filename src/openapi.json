@@ -231,31 +231,40 @@
     }
   }
 },
-"/cloudflare/addsub": {
+"/cloudflare/dns": {
   "get": {
-    "summary": "Add / Update Subdomain Cloudflare",
-    "description": "Membuat subdomain baru atau mengubah status proxy Cloudflare",
+    "summary": "Manage DNS Cloudflare",
+    "description": "Create atau update DNS record (A, CNAME, dll)",
     "tags": ["Cloudflare"],
     "parameters": [
       {
-        "name": "ip",
+        "name": "type",
         "in": "query",
-        "required": true,
+        "required": false,
         "schema": {
           "type": "string",
-          "example": "1.1.1.1"
+          "enum": ["A", "AAAA", "CNAME", "TXT"],
+          "default": "A"
         },
-        "description": "IP address tujuan"
+        "description": "Jenis DNS record"
       },
       {
-        "name": "sub",
+        "name": "name",
         "in": "query",
         "required": true,
         "schema": {
-          "type": "string",
-          "example": "panel"
+          "type": "string"
         },
-        "description": "Nama subdomain"
+        "description": "Subdomain (contoh: api)"
+      },
+      {
+        "name": "content",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "IP atau domain tujuan"
       },
       {
         "name": "proxy",
@@ -266,7 +275,7 @@
           "enum": ["on", "off"],
           "default": "off"
         },
-        "description": "Aktifkan Cloudflare proxy"
+        "description": "Cloudflare proxy (orange cloud)"
       }
     ],
     "responses": {
@@ -277,8 +286,9 @@
             "example": {
               "status": true,
               "result": {
-                "domain": "panel.example.com",
-                "ip": "1.1.1.1",
+                "domain": "api.yasamdev.web.id",
+                "type": "A",
+                "content": "1.1.1.1",
                 "proxied": true,
                 "action": "created"
               }
@@ -287,26 +297,10 @@
         }
       },
       "400": {
-        "description": "Parameter tidak lengkap",
-        "content": {
-          "application/json": {
-            "example": {
-              "status": false,
-              "error": "ip dan sub wajib diisi"
-            }
-          }
-        }
+        "description": "Parameter kurang"
       },
       "500": {
-        "description": "Error server",
-        "content": {
-          "application/json": {
-            "example": {
-              "status": false,
-              "error": "Cloudflare API error"
-            }
-          }
-        }
+        "description": "Error Cloudflare"
       }
     }
   }
