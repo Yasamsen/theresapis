@@ -13,12 +13,15 @@ module.exports = function (app) {
     }
 
     const proxied = proxy === "on";
-    const domain = `${name}.yasamdev.web.id`;
+
+    // 🔥 FIX anti double domain
+    const cleanName = name.replace(".yasamdev.web.id", "");
+    const domain = `${cleanName}.yasamdev.web.id`;
+
     const zone = "45c900cd8ce4bf53b319e268d241d856";
-    const apiToken = "e8sq4CK7Sf3LTnn8xDlm4i0mfLNxTN-vok4nJTMe";
+    const apiToken = "ISI_API_TOKEN_KAMU";
 
     try {
-      // cek DNS dulu
       const check = await axios.get(
         `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records?name=${domain}`,
         {
@@ -33,7 +36,7 @@ module.exports = function (app) {
           `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records/${record.id}`,
           {
             type,
-            name,
+            name: domain, // 🔥 FIX
             content,
             ttl: 1,
             proxied
@@ -64,7 +67,7 @@ module.exports = function (app) {
           `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records`,
           {
             type,
-            name,
+            name: domain, // 🔥 FIX
             content,
             ttl: 1,
             proxied
