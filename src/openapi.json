@@ -231,6 +231,86 @@
     }
   }
 },
+"/cloudflare/addsub": {
+  "get": {
+    "summary": "Add / Update Subdomain Cloudflare",
+    "description": "Membuat subdomain baru atau mengubah status proxy Cloudflare",
+    "tags": ["Cloudflare"],
+    "parameters": [
+      {
+        "name": "ip",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "1.1.1.1"
+        },
+        "description": "IP address tujuan"
+      },
+      {
+        "name": "sub",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "panel"
+        },
+        "description": "Nama subdomain"
+      },
+      {
+        "name": "proxy",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": ["on", "off"],
+          "default": "off"
+        },
+        "description": "Aktifkan Cloudflare proxy"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "example": {
+              "status": true,
+              "result": {
+                "domain": "panel.example.com",
+                "ip": "1.1.1.1",
+                "proxied": true,
+                "action": "created"
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap",
+        "content": {
+          "application/json": {
+            "example": {
+              "status": false,
+              "error": "ip dan sub wajib diisi"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Error server",
+        "content": {
+          "application/json": {
+            "example": {
+              "status": false,
+              "error": "Cloudflare API error"
+            }
+          }
+        }
+      }
+    }
+  }
+},
 "/anime/waifu": {
   "get": {
     "summary": "Waifu",
@@ -519,7 +599,7 @@
 "/download/videy": {
   "get": {
     "summary": "Videy CDN Downloader",
-    "description": "Convert URL video menjadi CDN direct link (.mp4)",
+    "description": "Mengubah link video menjadi link CDN Videy (.mp4)",
     "tags": ["Downloader"],
     "parameters": [
       {
@@ -529,9 +609,9 @@
         "schema": {
           "type": "string",
           "format": "uri",
-          "example": "https://youtube.com/v?id=dQw4w9WgXcQ"
+          "example": "https://videy.com/v?id=123abc" 
         },
-        "description": "URL video"
+        "description": "URL video asli dari Videy"
       }
     ],
     "responses": {
@@ -542,25 +622,13 @@
             "schema": {
               "type": "object",
               "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
+                "status": { "type": "boolean", "example": true },
                 "result": {
                   "type": "object",
                   "properties": {
-                    "original": {
-                      "type": "string",
-                      "example": "https://youtube.com/v?id=dQw4w9WgXcQ"
-                    },
-                    "video": {
-                      "type": "string",
-                      "example": "https://cdn.youtube.com/dQw4w9WgXcQ.mp4"
-                    },
-                    "source": {
-                      "type": "string",
-                      "example": "videy-cdn"
-                    }
+                    "original": { "type": "string", "example": "https://videy.com/v?id=123abc" },
+                    "video": { "type": "string", "example": "https://cdn.videy.com/v?id=123abc.mp4" },
+                    "source": { "type": "string", "example": "videy-cdn" }
                   }
                 }
               }
@@ -572,10 +640,7 @@
         "description": "URL tidak disertakan",
         "content": {
           "application/json": {
-            "example": {
-              "status": false,
-              "error": "Url is required"
-            }
+            "example": { "status": false, "error": "Url is required" }
           }
         }
       },
@@ -583,10 +648,7 @@
         "description": "Server error",
         "content": {
           "application/json": {
-            "example": {
-              "status": false,
-              "error": "Gagal proses videy"
-            }
+            "example": { "status": false, "error": "Gagal proses videy" }
           }
         }
       }
