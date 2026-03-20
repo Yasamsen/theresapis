@@ -13,7 +13,7 @@ module.exports = function (app) {
     }
 
     const proxied = proxy === "on";
-    const domain = `${sub}`.'yasamdev.web.id';
+    const domain = `${sub}.yasamdev.web.id`;
     const zone = '45c900cd8ce4bf53b319e268d241d856';
 
     try {
