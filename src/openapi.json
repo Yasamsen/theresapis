@@ -1028,6 +1028,47 @@
     }
   }
 },
+"/tools/catbox": {
+  "get": {
+    "summary": "Upload ke Catbox",
+    "description": "Upload file dari URL ke catbox.moe",
+    "tags": ["Uploader"],
+    "parameters": [
+      {
+        "name": "url",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "description": "Link file (image/video)"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil upload",
+        "content": {
+          "application/json": {
+            "example": {
+              "status": true,
+              "result": {
+                "original": "https://example.com/image.jpg",
+                "catbox": "https://files.catbox.moe/abc123.jpg"
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "URL kosong"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    }
+  }
+},
 "/tools/remini": {
   "get": {
     "summary": "Remini AI Image Processing",
