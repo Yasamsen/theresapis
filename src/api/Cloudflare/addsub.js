@@ -16,33 +16,24 @@ module.exports = function (app) {
     const domain = `${sub}.yasamdev.web.id`;
     const zone = '45c900cd8ce4bf53b319e268d241d856';
     const apiToken = 'e8sq4CK7Sf3LTnn8xDlm4i0mfLNxTN-vok4nJTMe';
-    try {
 
+    try {
+      // cek DNS record dulu
       const check = await axios.get(
         `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records?name=${domain}`,
         {
-          headers: {
-            Authorization: `Bearer ${apiToken}`
-          }
+          headers: { Authorization: `Bearer ${apiToken}` }
         }
       );
 
       if (check.data.result.length > 0) {
-
         // update proxy
         const record = check.data.result[0];
 
-        await axios.patch(
+        const update = await axios.patch(
           `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records/${record.id}`,
-          {
-            proxied: proxied
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${apiToken}`,
-              "Content-Type": "application/json"
-            }
-          }
+          { proxied: proxied },
+          { headers: { Authorization: `Bearer ${apiToken}`, "Content-Type": "application/json" } }
         );
 
         return res.status(200).json({
@@ -50,14 +41,14 @@ module.exports = function (app) {
           result: {
             domain,
             proxied,
-            action: "updated"
+            action: "updated",
+            cloudflareResponse: update.data // debug lengkap
           }
         });
 
       } else {
-
         // create baru
-        await axios.post(
+        const create = await axios.post(
           `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records`,
           {
             type: "A",
@@ -66,12 +57,7 @@ module.exports = function (app) {
             ttl: 1,
             proxied: proxied
           },
-          {
-            headers: {
-              Authorization: `Bearer ${apiToken}`,
-              "Content-Type": "application/json"
-            }
-          }
+          { headers: { Authorization: `Bearer ${apiToken}`, "Content-Type": "application/json" } }
         );
 
         return res.status(200).json({
@@ -80,17 +66,21 @@ module.exports = function (app) {
             domain,
             ip,
             proxied,
-            action: "created"
+            action: "created",
+            cloudflareResponse: create.data // debug lengkap
           }
         });
-
       }
 
     } catch (err) {
-      console.log(err.response?.data || err.message);
+      // debug lebih lengkap
+      console.error("Cloudflare API error:", err.response?.data || err.message);
+
       res.status(500).json({
         status: false,
-        error: "Cloudflare API error"
+        creator: "yasamDev",
+        error: err.response?.data?.errors?.[0]?.message || err.message || "Cloudflare API error",
+        details: err.response?.data || null // debug detail
       });
     }
 
