@@ -19,7 +19,7 @@ module.exports = function (app) {
     const domain = `${cleanName}.yasamdev.web.id`;
 
     const zone = "45c900cd8ce4bf53b319e268d241d856";
-    const apiToken = "ISI_API_TOKEN_KAMU";
+    const apiToken = "e8sq4CK7Sf3LTnn8xDlm4i0mfLNxTN-vok4nJTMe";
 
     try {
       const check = await axios.get(
