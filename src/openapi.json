@@ -516,6 +516,83 @@
     }
   }
 },
+"/download/videy": {
+  "get": {
+    "summary": "Videy CDN Downloader",
+    "description": "Convert URL video menjadi CDN direct link (.mp4)",
+    "tags": ["Downloader"],
+    "parameters": [
+      {
+        "name": "url",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uri",
+          "example": "https://youtube.com/v?id=dQw4w9WgXcQ"
+        },
+        "description": "URL video"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "original": {
+                      "type": "string",
+                      "example": "https://youtube.com/v?id=dQw4w9WgXcQ"
+                    },
+                    "video": {
+                      "type": "string",
+                      "example": "https://cdn.youtube.com/dQw4w9WgXcQ.mp4"
+                    },
+                    "source": {
+                      "type": "string",
+                      "example": "videy-cdn"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "URL tidak disertakan",
+        "content": {
+          "application/json": {
+            "example": {
+              "status": false,
+              "error": "Url is required"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "example": {
+              "status": false,
+              "error": "Gagal proses videy"
+            }
+          }
+        }
+      }
+    }
+  }
+},
 "/download/facebook": {
   "get": {
     "summary": "Facebook",
