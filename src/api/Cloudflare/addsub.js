@@ -15,14 +15,14 @@ module.exports = function (app) {
     const proxied = proxy === "on";
     const domain = `${sub}.yasamdev.web.id`;
     const zone = '45c900cd8ce4bf53b319e268d241d856';
-
+    const apiToken = 'e8sq4CK7Sf3LTnn8xDlm4i0mfLNxTN-vok4nJTMe';
     try {
 
       const check = await axios.get(
         `https://api.cloudflare.com/client/v4/zones/${zone}/dns_records?name=${domain}`,
         {
           headers: {
-            Authorization: `Bearer ${global.cloudflare.apiToken}`
+            Authorization: `Bearer ${apiToken}`
           }
         }
       );
@@ -39,7 +39,7 @@ module.exports = function (app) {
           },
           {
             headers: {
-              Authorization: `Bearer ${global.cloudflare.apiToken}`,
+              Authorization: `Bearer ${apiToken}`,
               "Content-Type": "application/json"
             }
           }
@@ -68,7 +68,7 @@ module.exports = function (app) {
           },
           {
             headers: {
-              Authorization: `Bearer ${global.cloudflare.apiToken}`,
+              Authorization: `Bearer ${apiToken}`,
               "Content-Type": "application/json"
             }
           }
