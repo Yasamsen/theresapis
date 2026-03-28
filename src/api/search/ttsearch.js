@@ -3,11 +3,11 @@ const axios = require("axios");
 module.exports = function (app) {
 
   const headers = {
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-  "Accept-Language": "en-US,en;q=0.9",
-  "Referer": "https://www.tiktok.com/",
-  "Accept": "text/html"
-};
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.tiktok.com/",
+    "Accept": "text/html"
+  };
 
   async function tiktokSearch(query) {
     const { data } = await axios.get(
@@ -17,30 +17,63 @@ module.exports = function (app) {
 
     let result = [];
 
-    // 🔥 ambil dari JSON di halaman
-    const json = data.match(/<script id="__UNIVERSAL_DATA_FOR_REHYDRATION__" type="application\/json">(.*?)<\/script>/);
+    // =========================
+    // 🥇 METHOD 1 (JSON utama)
+    // =========================
+    try {
+      const json = data.match(/__UNIVERSAL_DATA_FOR_REHYDRATION__.*?>(.*?)<\/script>/);
+      if (json) {
+        const parsed = JSON.parse(json[1]);
+        const items =
+          parsed?.__DEFAULT_SCOPE__?.["webapp.search-item"]?.itemList || [];
 
-    if (!json) return [];
+        for (let item of items) {
+          const v = item.item;
+          result.push({
+            description: v.desc,
+            url: `https://www.tiktok.com/@${v.author.uniqueId}/video/${v.id}`,
+            thumbnail: v.video.cover,
+            author: v.author.nickname,
+            username: v.author.uniqueId,
+            views: v.stats.playCount
+          });
+        }
+      }
+    } catch (e) {}
 
-    const parsed = JSON.parse(json[1]);
+    // =========================
+    // 🥈 METHOD 2 (regex itemList)
+    // =========================
+    if (!result.length) {
+      try {
+        const json = data.match(/"itemList":(\[.*?\])/);
+        if (json) {
+          const items = JSON.parse(json[1]);
 
-    const items =
-      parsed?.__DEFAULT_SCOPE__?.["webapp.search-item"]?.itemList || [];
+          for (let v of items) {
+            result.push({
+              description: v.desc || "-",
+              url: `https://www.tiktok.com/@${v.author?.uniqueId}/video/${v.id}`,
+              thumbnail: v.video?.cover,
+              author: v.author?.nickname,
+              username: v.author?.uniqueId,
+              views: v.stats?.playCount
+            });
+          }
+        }
+      } catch (e) {}
+    }
 
-    for (let item of items) {
-      const video = item.item;
+    // =========================
+    // 🥉 METHOD 3 (ambil link langsung)
+    // =========================
+    if (!result.length) {
+      const links = data.match(/https:\/\/www\.tiktok\.com\/@[^"]+/g) || [];
 
-      result.push({
-        description: video.desc,
-        videoId: video.id,
-        url: "https://www.tiktok.com/@"+ video.author.uniqueId +"/video/"+ video.id,
-        thumbnail: video.video.cover,
-        author: video.author.nickname,
-        username: video.author.uniqueId,
-        duration: video.video.duration,
-        likes: video.stats.diggCount,
-        views: video.stats.playCount
-      });
+      result = [...new Set(links)].slice(0, 10).map(url => ({
+        url,
+        description: "Video TikTok",
+      }));
     }
 
     return result;
