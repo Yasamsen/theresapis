@@ -94,6 +94,65 @@
     }
   }
 },
+"/ai-image/nanoedit": {
+  "get": {
+    "summary": "AI Image NanoEdit",
+    "description": "Mengedit gambar menggunakan AI dan mengembalikan URL hasil edit.",
+    "tags": ["AI Image"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "url",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "URL gambar"
+      },
+      {
+        "in": "query",
+        "name": "prompt",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Prompt edit gambar"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mengedit gambar",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "task_id": {
+                  "type": "string",
+                  "example": "cd1be7a6ae63b174b5e53e5065c57974"
+                },
+                "result": {
+                  "type": "string",
+                  "example": "https://temp.live3d.io/...webp"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    }
+  }
+},
 "/ai/gpt": {
   "get": {
     "summary": "AI GPT Response",
