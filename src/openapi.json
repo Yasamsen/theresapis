@@ -153,6 +153,44 @@
     }
   }
 },
+"/ai-image/editfoto": {
+  "get": {
+    "summary": "AI Edit Foto",
+    "description": "Mengedit gambar menggunakan AI dan langsung mengembalikan hasil berupa image.",
+    "tags": ["AI Image"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "url",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      {
+        "in": "query",
+        "name": "prompt",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mengedit gambar",
+        "content": {
+          "image/png": {
+            "schema": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      }
+    }
+  }
+},
 "/ai/gpt": {
   "get": {
     "summary": "AI GPT Response",
