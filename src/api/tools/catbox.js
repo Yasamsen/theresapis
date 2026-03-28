@@ -1,77 +1,46 @@
 const axios = require("axios");
 const FormData = require("form-data");
-const fs = require("fs");
-const path = require("path");
 
 module.exports = function (app) {
 
-  app.get("/tools/catbox", async (req, res) => {
-    const { url } = req.query;
+  app.post("/tools/catbox", async (req, res) => {
+    const file = req.files?.file; // express-fileupload
 
-    if (!url) {
-      return res.status(400).json({
-        status: false,
-        error: "url wajib diisi",
-      });
-    }
+    if (!file) return res.status(400).json({
+      status: false,
+      error: "File wajib diupload (field: file)"
+    });
 
     try {
-      // download dulu file dari url
-      const tempPath = "./temp_file";
-
-      const response = await axios({
-        url,
-        method: "GET",
-        responseType: "stream"
-      });
-
-      const ext = path.extname(url.split("?")[0]) || ".jpg";
-      const filePath = tempPath + ext;
-
-      const writer = fs.createWriteStream(filePath);
-      response.data.pipe(writer);
-
-      await new Promise((resolve, reject) => {
-        writer.on("finish", resolve);
-        writer.on("error", reject);
-      });
-
-      // upload ke catbox
       const form = new FormData();
-      form.append("fileToUpload", fs.createReadStream(filePath));
       form.append("reqtype", "fileupload");
+      // pakai file.data langsung
+      form.append("fileToUpload", file.data, file.name);
 
       const upload = await axios.post(
         "https://catbox.moe/user/api.php",
         form,
-        {
-          headers: {
-            ...form.getHeaders(),
-            "User-Agent": "Mozilla/5.0"
-          }
-        }
+        { headers: { ...form.getHeaders() }, maxBodyLength: Infinity }
       );
-
-      // hapus file sementara
-      fs.unlinkSync(filePath);
 
       return res.json({
         status: true,
         result: {
-          original: url,
-          catbox: upload.data
+          filename: file.name,
+          size: file.size,
+          url: upload.data,
+          source: "catbox.moe"
         }
       });
 
     } catch (err) {
-      console.log(err);
-
+      console.error(err.response?.data || err.message);
       res.status(500).json({
         status: false,
-        error: err.message
+        creator: "yasamDev",
+        error: err.response?.data || err.message
       });
     }
-
   });
 
 };
