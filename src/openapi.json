@@ -1207,6 +1207,65 @@
     }
   }
 },
+"/search/tiktok": {
+  "get": {
+    "summary": "Search TikTok (Scraping)",
+    "description": "Mencari video TikTok menggunakan teknik scraping tanpa API resmi.",
+    "tags": ["Search"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "q",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Kata kunci pencarian, contoh: dance, anime, meme"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mengambil data TikTok",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "description": { "type": "string" },
+                      "videoId": { "type": "string" },
+                      "url": { "type": "string" },
+                      "thumbnail": { "type": "string" },
+                      "author": { "type": "string" },
+                      "username": { "type": "string" },
+                      "duration": { "type": "number" },
+                      "likes": { "type": "number" },
+                      "views": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    }
+  }
+},
 "/search/youtube": {
   "get": {
     "summary": "Search YouTube (Scraping)",
