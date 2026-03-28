@@ -156,9 +156,18 @@
 "/ai/gpt-promt": {
   "get": {
     "summary": "GPT Prompt AI",
-    "description": "Mengirim prompt ke AI dan mendapatkan jawaban berbasis teks.",
+    "description": "Mengirim prompt dan text ke AI dan mendapatkan jawaban.",
     "tags": ["AI"],
     "parameters": [
+      {
+        "in": "query",
+        "name": "prompt",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Instruksi AI"
+      },
       {
         "in": "query",
         "name": "text",
@@ -166,29 +175,12 @@
         "schema": {
           "type": "string"
         },
-        "description": "Prompt / pertanyaan ke AI"
+        "description": "Isi pertanyaan"
       }
     ],
     "responses": {
       "200": {
-        "description": "Berhasil mendapatkan respon AI",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "result": {
-                  "type": "string",
-                  "example": "Halo! Apa yang bisa saya bantu?"
-                }
-              }
-            }
-          }
-        }
+        "description": "Berhasil mendapatkan respon AI"
       }
     }
   }

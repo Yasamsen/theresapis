@@ -2,15 +2,19 @@ const axios = require("axios");
 
 module.exports = function (app) {
 
-  const API_URL = "https://api-faa.my.id/faa/gpt-promt?text=";
+  const API_URL = "https://api-faa.my.id/faa/gpt-promt";
 
-  async function gptPromt(text) {
+  async function gptPromt(prompt, text) {
     const { data } = await axios.get(
-      API_URL + encodeURIComponent(text),
+      API_URL +
+        "?prompt=" + encodeURIComponent(prompt) +
+        "&text=" + encodeURIComponent(text),
       {
         headers: {
-          "User-Agent": "Mozilla/5.0",
-          "Accept": "application/json"
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+          "Accept": "application/json, text/plain, */*",
+          "Referer": "https://api-faa.my.id/",
+          "Origin": "https://api-faa.my.id"
         },
         timeout: 30000
       }
@@ -19,20 +23,20 @@ module.exports = function (app) {
   }
 
   app.get("/ai/gpt-promt", async (req, res) => {
-    const { text } = req.query;
+    const { prompt, text } = req.query;
 
-    if (!text) {
+    if (!prompt || !text) {
       return res.status(400).json({
         status: false,
-        error: "Parameter text wajib diisi"
+        error: "Parameter prompt dan text wajib diisi"
       });
     }
 
     try {
-      const result = await gptPromt(text);
+      const result = await gptPromt(prompt, text);
 
       if (!result?.status) {
-        return res.status(500).json({
+        return res.json({
           status: false,
           error: "Gagal mendapatkan respon AI"
         });
