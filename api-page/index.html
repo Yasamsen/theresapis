@@ -1,459 +1,262 @@
-</body>
-</html><!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Dokumentasi API modern dan antarmuka pengujian yang interaktif. Jelajahi berbagai endpoint API kami dengan mudah.">
-    <meta name="keywords" content="API, Dokumentasi API, REST API, Alya APIs, Z7:林企业, Alat Pengembang">
-    <meta name="author" content="Z7:林企业">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://Alyapis.vercel.app">
-    <meta property="og:title" content="Alya APIs V1 - Dokumentasi API Modern">
-    <meta property="og:description" content="Jelajahi berbagai endpoint API kami dengan antarmuka yang modern dan mudah digunakan.">
-    <meta property="og:image" content="/src/banner.jpg">
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://Alyapis.vercel.app">
-    <meta property="twitter:title" content="Alya APIs V1 - Dokumentasi API Modern">
-    <meta property="twitter:description" content="Jelajahi berbagai endpoint API kami dengan antarmuka yang modern dan mudah digunakan.">
-    <meta property="twitter:image" content="/src/banner.jpg">
-    <link rel="icon" href="https://Alyapis.vercel.app/src/icon.png" type="image/png">
-    <title id="page">Alya APIs V1.</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>JunnAPIs • REST API Platform</title>
 
-    <script src="https://cdn.tailwindcss.com/"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com/">
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/icon.png">
+<meta name="theme-color" content="#0f172a">
+  
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet"/>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'mono': ['Ubuntu Mono', 'monospace'],
-                        'sans': ['Inter', 'system-ui', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+<style>
+:root{
+  --bg:#0b1020; --text:#e8edff; --muted:#9aa4c7; --line:#19224b;
+  --grad-1:#131a3a; --grad-2:#0d1536; --grad-3:#0d2237;
+  --brand:#7aa2ff; --brand2:#4ad295;
+  --card:#0f1736; --card-line:#1a234a; --shadow:0 16px 40px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html, body { height: 100%; }
 
-    <style>
-        :root {
-            --background: #f9fbff;
-            --foreground: #2c3e50;
-            --card: #ffffff;
-            --card-foreground: #2c3e50;
-            --primary: #3498db;
-            --primary-foreground: #ffffff;
-            --secondary: #85c1e9;
-            --accent: #48d1cc;
-            --muted: #f1f5f9;
-            --muted-foreground: #7f8c8d;
-            --border: rgba(0, 0, 0, 0.08);
-            --radius: 0.5rem;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 6px 20px rgba(0, 0, 0, 0.12);
-        }
+body{
+  margin:0;
+  font-family:Inter,system-ui,Segoe UI,Arial;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(122,162,255,.18), transparent 60%),
+    radial-gradient(900px 500px at -10% -10%, rgba(74,210,149,.14), transparent 60%),
+    radial-gradient(900px 420px at 50% 120%, rgba(122,162,255,.12), transparent 60%),
+    linear-gradient(180deg, var(--grad-1), var(--grad-2) 40%, var(--grad-3));
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100svh; /* aman untuk mobile (dynamic viewport) */
+}
 
-        body {
-            background-color: var(--background);
-            color: var(--foreground);
-            font-family: 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+a{color:inherit;text-decoration:none}
 
-        #mouse-spotlight {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            background: radial-gradient(600px circle at 0px 0px, rgba(52, 152, 219, 0.08), transparent 80%);
-            transition: background 0.1s ease-out;
-        }
+.wrap{
+  max-width:min(1100px,100vw - 32px);
+  margin:0 auto;
+  padding:20px 16px 40px;
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+}
 
-        header, .bg-card {
-            background-color: var(--card) !important;
-            border-color: var(--border) !important;
-            box-shadow: var(--shadow);
-        }
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand h1{margin:0;font-size:24px;letter-spacing:.2px}
+.logo{width:28px;height:28px;border-radius:8px;object-fit:cover;border:1px solid #1e2758}
+.menu{display:flex;gap:10px}
+.btn{display:inline-flex;gap:8px;align-items:center;padding:10px 14px;border-radius:12px;font-weight:800}
+.btn-ghost{background:#10193c;border:1px solid #1b2350;color:#cfe1ff}
+.btn-grad{background:linear-gradient(90deg,var(--brand),var(--brand2));color:#051028}
+.btn-lg{padding:14px 18px;border-radius:14px}
 
-        .bg-card-hover:hover {
-            border-color: var(--primary) !important;
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-3px) scale(1.02);
-        }
+/* HERO */
+.hero{display:grid;gap:18px;place-items:center;text-align:center;padding:56px 0 28px}
+.pill{display:inline-flex;gap:8px;align-items:center;background:#111a3d;border:1px solid #1c2655;color:#cfe1ff;padding:6px 12px;border-radius:999px;font-weight:700}
+.title{font-size:42px;line-height:1.1;margin:6px 0;text-wrap:balance}
+.desc{max-width:760px;color:var(--muted);font-size:18px;line-height:1.7}
+.cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn-grad:hover{transform:translateY(-1px)} .btn-ghost:hover{background:#0f1736}
 
-        .bg-primary {
-             background-color: var(--primary);
-             color: var(--primary-foreground);
-        }
+/* PREVIEW */
+.preview{margin-top:32px}
+.preview-grid{display:grid;gap:14px;grid-template-columns:1fr;}
+@media (min-width:720px){ .preview-grid{grid-template-columns:repeat(3,1fr);} }
+.pv-card{position:relative;background:var(--card);border:1px solid #1b2554;border-radius:16px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.pv-card::after{content:"";position:absolute;inset:-1px;border-radius:18px;pointer-events:none;
+  background:linear-gradient(130deg,rgba(122,162,255,.35),rgba(74,210,149,.25),transparent 60%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;padding:1px;opacity:.25}
+.pv-title{font-weight:800;margin:2px 0 6px} .pv-desc{color:var(--muted);margin:0}
 
-        .bg-primary:hover {
-            filter: brightness(1.1);
-            box-shadow: var(--shadow);
-        }
+/* SECTION HEADER */
+.sec-head{display:flex;align-items:center;gap:10px;margin:34px 4px 12px}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(122,162,255,.5),transparent)}
+.sec-title{font-weight:800;color:#dfe7ff;white-space:nowrap}
 
-        .text-primary { color: var(--primary); }
-        .text-foreground { color: var(--foreground); }
-        .text-muted-foreground { color: var(--muted-foreground); }
+/* CATEGORY LIST */
+.features{display:none;margin-top:8px}
+.features.show{display:block}
+.cat-list{display:grid;gap:12px}
+.cat-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px;border-radius:14px;background:var(--card);border:1px solid var(--card-line);
+  box-shadow:var(--shadow);
+}
+.ci-left{display:flex;align-items:center;gap:12px}
+.badge{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;
+  background:#0e1836;border:1px solid #202a58;font-size:22px}
+.ci-title{font-weight:800}
+.ci-desc{color:var(--muted);font-size:13px}
+.tag{display:inline-flex;gap:6px;align-items:center;background:#101c44;border:1px solid #213072;color:#cfe1ff;padding:6px 10px;border-radius:999px;font-weight:700}
 
-        .border-primary { border-color: var(--primary); }
-        .border-default { border-color: var(--border); }
+/* WHY (glow cards) */
+.why{margin-top:22px;display:none;opacity:0;transform:translateY(8px);transition:opacity .25s ease, transform .25s ease}
+.why.show{display:block;opacity:1;transform:translateY(0)}
+.why-grid{display:grid;gap:22px;grid-template-columns:1fr;} @media (min-width:720px){ .why-grid{grid-template-columns:1fr 1fr;} }
+.why-card{position:relative;border-radius:18px;padding:20px 18px;background:var(--card);border:1px solid var(--card-line);box-shadow:var(--shadow)}
+.why-card::before{content:"";position:absolute;inset:-1px;border-radius:20px;pointer-events:none;
+  background:linear-gradient(120deg,rgba(122,162,255,.55),rgba(74,210,149,.45),transparent 70%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;padding:1px;opacity:.35}
+.why-icon{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;margin-bottom:10px;background:linear-gradient(180deg,#0f1a3d,#0b1330);border:1px solid #202a58;box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 6px 18px rgba(0,0,0,.35)}
+.why-title{font-size:22px;font-weight:800;margin:6px 0 10px} .why-desc{color:var(--muted);margin:0;line-height:1.7}
 
-        ::-webkit-scrollbar {
-            display: none !important;
-        }
+/* FOOTER + socials */
+.footer{
+  margin:40px 0 8px;
+  text-align:center;
+  color:#93a0c8;
+  font-size:13px;
+  margin-top:auto; /* dorong footer ke bawah */
+}
+.socials{display:flex;gap:12px;justify-content:center;margin-top:10px}
+.icon-btn{width:40px;height:40px;border-radius:999px;display:grid;place-items:center;background:#0f1736;border:1px solid #1b2554}
+.icon-btn:hover{background:#0e1834}
+.icon{width:20px;height:20px;display:block}
 
-        #loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--background);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-        }
-
-        #loader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-on-load {
-            opacity: 0;
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-            transition-delay: var(--delay, 0s);
-        }
-
-        .animate-on-scroll.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .gradient-text {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .feature-icon {
-            transition: transform 0.3s ease;
-        }
-        .bg-card-hover:hover .feature-icon {
-            transform: scale(1.1) rotate(-5deg);
-        }
-
-        .stat-item {
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-            border-radius: var(--radius);
-            padding: 0.5rem 0;
-        }
-        .stat-item:hover {
-            transform: translateY(-3px);
-            background-color: var(--card);
-            box-shadow: var(--shadow);
-        }
-
-        .step-item {
-            transition: transform 0.3s ease;
-        }
-        .step-item:hover {
-            transform: translateX(5px);
-        }
-        .step-number {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .step-item:hover .step-number {
-             transform: scale(1.1);
-             box-shadow: var(--shadow);
-        }
-    </style>
+/* fallback untuk viewport lama */
+@supports (height: 100dvh) {
+  body{ min-height: 100dvh; }
+  .wrap{ min-height: 100dvh; }
+}
+</style>
 </head>
-<body class="text-foreground antialiased font-mono min-h-screen">
-
-    <div id="mouse-spotlight"></div>
-    <div id="loader">
-        <div class="spinner"></div>
+<body>
+<div class="wrap">
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="brand">
+      <img class="logo" src="https://cdn.yupra.my.id/yp/rpvaywxy.jpg" alt="logo"/>
+      <h1>JunnAPIs</h1>
     </div>
+    <div class="menu">
+      <a class="btn btn-ghost" href="https://github.com/juun4/RestApi-s" target="_blank">GitHub</a>
+      <a class="btn btn-grad" href="/docs">Open Docs</a>
+    </div>
+  </nav>
 
-    <header class="sticky top-0 z-40 bg-card border-b py-5">
-        <div class="max-w-2xl mx-auto px-8 flex justify-between items-center">
-            <div class="flex items-center"></div>
-            <div class="flex items-center space-x-4"></div>
-        </div>
-    </header>
+  <!-- HERO -->
+  <section class="hero">
+    <span class="pill">🚀 REST API Platform</span>
+    <h2 class="title">Bangun aplikasi lebih cepat dengan API yang simpel &amp; modern</h2>
+    <p class="desc">
+      Kumpulan endpoint gratis &amp; minimalis untuk kebutuhan development sehari-hari:
+      downloader, AI tools, searching utilities, dan banyak lagi — dokumentasi jelas &amp; respons cepat.
+    </p>
+    <div class="cta">
+      <a id="btnGetStarted" class="btn btn-grad btn-lg">Get Started</a>
+      <a class="btn btn-ghost btn-lg" href="/docs">View Documentation</a>
+    </div>
+  </section>
 
-    <main class="max-w-2xl mx-auto px-8 py-10">
-        <div class="text-left mb-6">
-            <p class="text-muted-foreground text-xs mb-4 animate-on-load" style="animation-delay: 0.1s;">Hi Developer! Welcome To</p>
-            <h2 class="flex flex-wrap items-center gap-1 text-3xl text-foreground font-bold mb-1.5 animate-on-load" style="animation-delay: 0.2s;">
-    <span class="flex-grow text-black">Alya APIs</span>
-    <span class="text-xs font-bold text-white bg-black px-3 py-1 whitespace-nowrap">
-        v1.0
-    </span>
-</h2>
-            <p class="text-muted-foreground text-xs mx-auto mb-4 animate-on-load" style="animation-delay: 0.3s;">Powerful API platform for modern applications</p>
+  <!-- PREVIEW -->
+  <section id="preview" class="preview">
+    <div class="sec-head"><span class="sec-title">Sekilas</span><span class="sec-line"></span></div>
+    <div class="preview-grid">
+      <div class="pv-card"><div class="pv-title">📚 Endpoints</div><p class="pv-desc">Puluhan endpoint siap pakai: downloader, AI, search, tools, dan lainnya.</p></div>
+      <div class="pv-card"><div class="pv-title">📈 Uptime</div><p class="pv-desc">Arsitektur ringan di Vercel dengan auto-scale dan monitoring.</p></div>
+      <div class="pv-card"><div class="pv-title">⚡ Latency</div><p class="pv-desc">Respons cepat & payload JSON yang konsisten untuk integrasi kilat.</p></div>
+    </div>
+  </section>
 
-            <div class="mb-4 animate-on-load" style="animation-delay: 0.4s;">
-    <a href="/docs" class="inline-block bg-black text-white px-6 py-2 rounded text-sm font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-        <i class="fas fa-rocket mr-2"></i>START
+  <!-- CATEGORIES ONLY -->
+  <section id="features" class="features"></section>
+
+  <!-- WHY -->
+  <section id="why" class="why">
+    <div class="sec-head"><span class="sec-title">Kenapa JunnAPIs</span><span class="sec-line"></span></div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" fill="#71b7ff"/></svg></div>
+        <div class="why-title">Lightning Fast</div>
+        <p class="why-desc">Optimized REST APIs dengan latensi minim untuk aplikasi real-time. Rata-rata respons di bawah 100ms.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z" fill="#7adfae"/><path d="M9 12l2 2 4-4" stroke="#0b1432" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="why-title">Enterprise Security</div>
+        <p class="why-desc">Semua request diamankan dengan HTTPS &amp; rate-limits. Beberapa fitur mendukung API key untuk akses privat.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M7 4L3 8l4 4M17 4l4 4-4 4" stroke="#71b7ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="why-title">Developer First</div>
+        <p class="why-desc">RESTful, parameter jelas, contoh siap pakai, dan struktur JSON konsisten untuk integrasi kilat.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3a8 8 0 00-8 8v5a2 2 0 002 2h2v-6H6v-1a6 6 0 1112 0v1h-2v6h2a2 2 0 002-2v-5a8 8 0 00-8-8z" fill="#7adfae"/></svg></div>
+        <div class="why-title">24/7 Support</div>
+        <p class="why-desc">Dukungan teknis responsif &amp; siap bantu troubleshooting untuk kebutuhan production.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="footer">© <span id="yy"></span> Made by <b>juun4</b></div>
+  <div class="socials">
+    <a class="icon-btn" href="https://github.com/juun4" target="_blank" title="GitHub">
+      <svg class="icon" viewBox="0 0 24 24" fill="#cfe1ff"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.1.82-.26.82-.58v-2.02c-3.34.73-4.04-1.6-4.04-1.6-.54-1.37-1.33-1.73-1.33-1.73-1.09-.75.08-.74.08-.74 1.2.09 1.83 1.23 1.83 1.23 1.07 1.83 2.8 1.3 3.48.99.11-.78.42-1.3.77-1.6-2.67-.31-5.48-1.34-5.48-5.96 0-1.32.47-2.39 1.23-3.23-.12-.3-.53-1.54.12-3.2 0 0 1-.32 3.3 1.23a11.4 11.4 0 0 1 6 0c2.3-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.9.12 3.2.77.84 1.23 1.91 1.23 3.23 0 4.64-2.81 5.64-5.49 5.95.43.37.82 1.1.82 2.22v3.3c0 .32.21.69.83.57A12 12 0 0 0 12 .5Z"/></svg>
     </a>
-</div>
-
-            <div class="text-xs space-y-1 animate-on-load" style="animation-delay: 0.5s;">
-                <div>
-                    <a href="#features" class="text-foreground underline hover:text-primary">Features</a>
-                </div>
-                <div>
-                    <a href="https://github.com/Reyz2902" target="_blank" class="text-foreground underline hover:text-primary">GitHub</a>
-                </div>
-                <div>
-                  <a href="https://whatsapp.com/channel/0029Vb6pfuzJf05iZHfkli44" target="_blank" class="text-foreground underline hover:text-primary">
-                    WhatsApp Channel
-                  </a>
-                </div>
-                <div>
-                  <a href="https://t.me/YasamOffc" target="_blank" class="text-foreground underline hover:text-primary">
-                    Contact Me
-                  </a>
-                </div>
-            </div>
-        </div>
-<div class="bg-card border-default p-4 my-3 animate-on-scroll">
-    <div class="grid grid-cols-3 gap-4">
-        <div class="text-center stat-item">
-            <div id="total-endpoints" class="text-lg font-bold text-foreground">0</div>
-            <div class="text-xs text-muted-foreground">Endpoints</div>
-        </div>
-        <div class="text-center stat-item">
-            <div id="total-categories" class="text-lg font-bold text-foreground">0</div>
-            <div class="text-xs text-muted-foreground">Categories</div>
-        </div>
-        <div class="text-center stat-item">
-            <div class="text-lg font-bold text-foreground">24/7</div>
-            <div class="text-xs text-muted-foreground">Support</div>
-        </div>
-    </div>
+    <a class="icon-btn" href="https://wa.me/628672763507" target="_blank" title="WhatsApp">
+      <svg class="icon" viewBox="0 0 24 24" fill="#7adfae"><path d="M20.5 3.5A11 11 0 0 0 2.9 18.2l-1.4 4.2 4.3-1.4A11 11 0 1 0 20.5 3.5Zm-8.1 18a9 9 0 0 1-4.6-1.3l-.3-.2-2.7.9.9-2.7-.2-.3a9 9 0 1 1 7 3.6Zm5-6.8c-.3-.2-1.7-.9-1.9-1-.2-.1-.3-.2-.5 0l-.7.8c-.1.1-.2.1-.4 0-.2-.1-1.1-.4-2.1-1.3a7.3 7.3 0 0 1-1.4-1.7c-.1-.2 0-.3.1-.4l.3-.4.2-.4c.1-.1 0-.3 0-.4l-1-2.3c-.1-.3-.3-.3-.5-.3h-.4c-.2 0-.4 0-.6.3-.2.3-.8.8-.8 2s.9 2.4 1 2.6c.1.2 1.8 2.8 4.3 3.9.6.3 1 .5 1.3.6.6.3 1.2.2 1.7.1.5-.1 1.7-.7 2-1.4.2-.7.2-1.3.1-1.4 0-.2-.2-.3-.4-.4Z"/></svg>
+    </a>
+    <a class="icon-btn" href="https://youtube.com/@JunaaInHeree" target="_blank" title="YouTube">
+      <svg class="icon" viewBox="0 0 24 24" fill="#ff6f6f"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .6 5.8 3 3 0 0 0 2.1 2.1C4.6 20.5 12 20.5 12 20.5s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1 31.5 31.5 0 0 0 .6-5.8 31.5 31.5 0 0 0-.6-5.8ZM9.7 15.5v-7l6.3 3.5-6.3 3.5Z"/></svg>
+    </a>
+  </div>
 </div>
 
 <script>
-async function updateStats() {
+document.getElementById('yy').textContent = new Date().getFullYear();
+
+const featuresEl = document.getElementById('features');
+const whyEl = document.getElementById('why');
+const btn = document.getElementById('btnGetStarted');
+
+btn.addEventListener('click', async (e) => {
+  e.preventDefault();
+  if (!featuresEl.classList.contains('show')) {
     try {
-        // Load JSON OpenAPI
-        const response = await fetch('/src/openapi.json');
-        const data = await response.json();
-
-        // Total endpoints
-        const totalEndpoints = Object.keys(data.paths || {}).length;
-
-        // Total kategori unik
-        const categories = new Set((data.tags || []).map(tag => tag.name));
-        const totalCategories = categories.size;
-
-        // Update HTML
-        document.getElementById('total-endpoints').textContent = totalEndpoints;
-        document.getElementById('total-categories').textContent = totalCategories;
+      const cfg = await (await fetch('/src/web-set.json', {cache:'no-store'})).json();
+      renderCategories(cfg);
     } catch (err) {
-        console.error('Gagal load openapi.json', err);
+      featuresEl.innerHTML = `<div style="opacity:.8">Gagal memuat kategori: ${err?.message||err}</div>`;
     }
+    featuresEl.classList.add('show');
+  }
+  featuresEl.scrollIntoView({ behavior:'smooth', block:'start' });
+  if (!whyEl.classList.contains('show')) whyEl.classList.add('show');
+});
+
+function renderCategories(cfg){
+  const cats = cfg?.categories || [];
+  let html = `<div class="sec-head"><span class="sec-title">Categories</span><span class="sec-line"></span></div>
+              <div class="cat-list">`;
+  cats.forEach(cat=>{
+    const count = (cat.items||[]).length;
+    html += `<div class="cat-item">
+      <div class="ci-left">
+        <div class="badge">${cat.icon || '📦'}</div>
+        <div>
+          <div class="ci-title">${cat.title || 'Category'}</div>
+          <div class="ci-desc">${count} endpoint${count!==1?'s':''}</div>
+        </div>
+      </div>
+      <span class="tag">Available</span>
+    </div>`;
+  });
+  html += `</div>`;
+  featuresEl.innerHTML = html;
 }
-
-// Jalankan saat halaman siap
-updateStats();
 </script>
-
-        <div class="space-y-3" id="features">
-    <div class="bg-card border-default bg-card-hover transition-all duration-300 rounded-none animate-on-scroll">
-        <div class="px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center min-w-0 flex-1">
-                <div class="feature-icon border-2 border-black w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4">
-                    <i class="fas fa-bolt text-black text-sm"></i>
-                </div>
-                <div class="flex flex-col min-w-0 flex-1">
-                    <h3 class="font-bold text-sm text-foreground truncate">Fast & Reliable</h3>
-                    <p class="text-xs text-muted-foreground">High-performance API endpoints with low latency</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-card border-default bg-card-hover transition-all duration-300 rounded-none animate-on-scroll" style="--delay: 0.1s;">
-        <div class="px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center min-w-0 flex-1">
-                <div class="feature-icon border-2 border-black w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4">
-                    <i class="fas fa-shield-alt text-black text-sm"></i>
-                </div>
-                <div class="flex flex-col min-w-0 flex-1">
-                    <h3 class="font-bold text-sm text-foreground truncate">Secure</h3>
-                    <p class="text-xs text-muted-foreground">Enterprise-grade security and encryption</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-card border-default bg-card-hover transition-all duration-300 rounded-none animate-on-scroll" style="--delay: 0.2s;">
-        <div class="px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center min-w-0 flex-1">
-                <div class="feature-icon border-2 border-black w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4">
-                    <i class="fas fa-code text-black text-sm"></i>
-                </div>
-                <div class="flex flex-col min-w-0 flex-1">
-                    <h3 class="font-bold text-sm text-foreground truncate">Easy Integration</h3>
-                    <p class="text-xs text-muted-foreground">Simple REST API with clear documentation</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-card border-default bg-card-hover transition-all duration-300 rounded-none animate-on-scroll" style="--delay: 0.3s;">
-        <div class="px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center min-w-0 flex-1">
-                <div class="feature-icon border-2 border-black w-8 h-8 flex items-center justify-center flex-shrink-0 mr-4">
-                    <i class="fas fa-chart-line text-black text-sm"></i>
-                </div>
-                <div class="flex flex-col min-w-0 flex-1">
-                    <h3 class="font-bold text-sm text-foreground truncate">Analytics</h3>
-                    <p class="text-xs text-muted-foreground">Detailed usage analytics and monitoring</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="my-8"></div>
-<div class="bg-card border-default p-6 mb-6 rounded-none animate-on-scroll">
-    <h3 class="flex items-center gap-2 font-bold text-lg text-foreground mb-5">
-        <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-        </svg>
-        Getting Started
-    </h3>
-
-    <div class="space-y-4">
-        <div class="flex items-start gap-4 step-item">
-            <div class="step-number border-2 border-dashed border-black text-black w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold text-sm rounded-none">1</div>
-            <div class="flex-1">
-                <h4 class="font-bold text-sm text-foreground mb-1">Choose Your Category</h4>
-                <p class="text-xs text-muted-foreground">Browse through available API categories on sidebar and select what you need.</p>
-            </div>
-        </div>
-
-        <div class="flex items-start gap-4 step-item">
-            <div class="step-number border-2 border-dashed border-black text-black w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold text-sm rounded-none">2</div>
-            <div class="flex-1">
-                <h4 class="font-bold text-sm text-foreground mb-1">Read the Docs</h4>
-                <p class="text-xs text-muted-foreground">Check endpoint parameters, response format, and example usage.</p>
-            </div>
-        </div>
-
-        <div class="flex items-start gap-4 step-item">
-            <div class="step-number border-2 border-dashed border-black text-black w-8 h-8 flex items-center justify-center flex-shrink-0 font-bold text-sm rounded-none">3</div>
-            <div class="flex-1">
-                <h4 class="font-bold text-sm text-foreground mb-1">Make Your Request</h4>
-                <p class="text-xs text-muted-foreground">Send HTTP requests and integrate the JSON response into your app.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="flex flex-col mt-10 text-center space-y-2 animate-on-scroll">
-  <p class="text-muted-foreground" style="font-size: 0.7rem; line-height: 1rem;">
-    © <span id="year"></span> Alya APIs — All Rights Reserved.
-  </p>
-  <p class="text-muted-foreground space-x-3" style="font-size: 0.7rem; line-height: 1rem;">
-    <a href="/privacy-policy" class="hover:underline hover:text-black">Privacy Policy</a>
-    <span aria-hidden="true">|</span>
-    <a href="/terms-of-service" class="hover:underline hover:text-black">Terms of Service</a>
-  </p>
-</div>
-    </main>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const loader = document.getElementById('loader');
-            loader.classList.add('hidden');
-
-            document.getElementById("year").textContent = new Date().getFullYear();
-
-            const spotlight = document.getElementById('mouse-spotlight');
-            if (spotlight) {
-                document.addEventListener('mousemove', (e) => {
-                    spotlight.style.background = `radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px, rgba(52, 152, 219, 0.08), transparent 80%)`;
-                });
-            }
-
-            const observerOptions = {
-                root: null,
-                rootMargin: '0px',
-                threshold: 0.1
-            };
-
-            const observerCallback = (entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            };
-
-            const observer = new IntersectionObserver(observerCallback, observerOptions);
-
-            document.querySelectorAll('.animate-on-scroll').forEach(target => {
-                observer.observe(target);
-            });
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>
