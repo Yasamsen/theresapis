@@ -1207,6 +1207,63 @@
     }
   }
 },
+"/search/youtube": {
+  "get": {
+    "summary": "Search YouTube (Scraping)",
+    "description": "Mencari video YouTube menggunakan teknik scraping tanpa API resmi.",
+    "tags": ["Search"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "q",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Kata kunci pencarian, contoh: naruto, music, tutorial coding"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mengambil data YouTube",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": { "type": "string" },
+                      "videoId": { "type": "string" },
+                      "url": { "type": "string" },
+                      "thumbnail": { "type": "string" },
+                      "duration": { "type": "string" },
+                      "channel": { "type": "string" },
+                      "views": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    }
+  }
+},
 "/search/pinterest": {
   "get": {
     "summary": "Search Pinterest Images",
@@ -1350,6 +1407,43 @@
     "responses": {
       "200": {
         "description": "Berhasil menghapus background",
+        "content": {
+          "image/png": {
+            "schema": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    }
+  }
+},
+"/tools/ssweb": {
+  "get": {
+    "summary": "Screenshot Website",
+    "description": "Mengambil screenshot dari sebuah website dan mengembalikan gambar langsung.",
+    "tags": ["Tools"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "url",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "URL website, contoh: https://google.com"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mengambil screenshot",
         "content": {
           "image/png": {
             "schema": {
