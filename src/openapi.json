@@ -153,6 +153,46 @@
     }
   }
 },
+"/ai/gpt-promt": {
+  "get": {
+    "summary": "GPT Prompt AI",
+    "description": "Mengirim prompt ke AI dan mendapatkan jawaban berbasis teks.",
+    "tags": ["AI"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "text",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Prompt / pertanyaan ke AI"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mendapatkan respon AI",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "string",
+                  "example": "Halo! Apa yang bisa saya bantu?"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
 "/ai/ai-hyper": {
   "get": {
     "summary": "AI Hyper Chat",
