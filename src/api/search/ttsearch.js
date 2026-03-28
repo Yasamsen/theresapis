@@ -3,9 +3,11 @@ const axios = require("axios");
 module.exports = function (app) {
 
   const headers = {
-    "User-Agent": "Mozilla/5.0",
-    "Accept-Language": "en-US,en;q=0.9"
-  };
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+  "Accept-Language": "en-US,en;q=0.9",
+  "Referer": "https://www.tiktok.com/",
+  "Accept": "text/html"
+};
 
   async function tiktokSearch(query) {
     const { data } = await axios.get(
