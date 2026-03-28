@@ -94,6 +94,90 @@
     }
   }
 },
+"/ai/gpt": {
+  "get": {
+    "summary": "AI GPT Response",
+    "description": "Mengirim pertanyaan ke AI dan mendapatkan jawaban.",
+    "tags": ["AI"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "text",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Pertanyaan untuk AI, contoh: Apa itu darah?"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mendapatkan jawaban AI",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "model": {
+                  "type": "string",
+                  "example": "AI Model"
+                },
+                "result": {
+                  "type": "string",
+                  "example": "Darah adalah cairan dalam tubuh..."
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Parameter text wajib diisi"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Gagal mendapatkan jawaban dari AI"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
 "/ai/venice": {
   "get": {
     "summary": "Venice AI Chat",
