@@ -817,6 +817,100 @@
     }
   }
 },
+"/downloader/ytdl": {
+  "get": {
+    "summary": "YouTube Downloader",
+    "description": "Mengambil data download video/audio dari YouTube.",
+    "tags": ["Downloader"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "url",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "URL video YouTube"
+      },
+      {
+        "in": "query",
+        "name": "type",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": ["mp3", "mp4"]
+        },
+        "description": "Tipe download (mp3/mp4)"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mengambil data download",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "object",
+                  "example": {
+                    "title": "Judul Video",
+                    "thumbnail": "https://img.youtube.com/...",
+                    "download": "https://link-download.mp4"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Parameter url dan type wajib diisi"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Gagal mengambil data video"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+},
 "/download/facebook": {
   "get": {
     "summary": "Facebook",
@@ -1233,6 +1327,86 @@
       },
       "500": {
         "description": "Server error"
+      }
+    }
+  }
+},
+"/tools/removebg": {
+  "get": {
+    "summary": "Remove Background Image",
+    "description": "Menghapus background dari gambar menggunakan URL.",
+    "tags": ["Tools"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "url",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "URL gambar, contoh: https://files.catbox.moe/dh0v0p.jpg"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil menghapus background",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "string",
+                  "example": "https://hasil-removebg.png"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Parameter url wajib diisi"
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "error": {
+                  "type": "string",
+                  "example": "Gagal menghapus background"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
