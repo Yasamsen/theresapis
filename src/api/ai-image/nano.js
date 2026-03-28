@@ -14,7 +14,7 @@ module.exports = function (app) {
       API_URL + encodeURIComponent(url) + "&prompt=" + encodeURIComponent(prompt),
       {
         headers,
-        timeout: 20000
+        timeout: 60000 // atau 120000
       }
     );
     return data;
