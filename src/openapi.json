@@ -1334,7 +1334,7 @@
 "/tools/removebg": {
   "get": {
     "summary": "Remove Background Image",
-    "description": "Menghapus background dari gambar menggunakan URL.",
+    "description": "Menghapus background dan mengembalikan gambar langsung.",
     "tags": ["Tools"],
     "parameters": [
       {
@@ -1344,69 +1344,26 @@
         "schema": {
           "type": "string"
         },
-        "description": "URL gambar, contoh: https://files.catbox.moe/dh0v0p.jpg"
+        "description": "URL gambar"
       }
     ],
     "responses": {
       "200": {
         "description": "Berhasil menghapus background",
         "content": {
-          "application/json": {
+          "image/png": {
             "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "result": {
-                  "type": "string",
-                  "example": "https://hasil-removebg.png"
-                }
-              }
+              "type": "string",
+              "format": "binary"
             }
           }
         }
       },
       "400": {
-        "description": "Parameter tidak lengkap",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": false
-                },
-                "error": {
-                  "type": "string",
-                  "example": "Parameter url wajib diisi"
-                }
-              }
-            }
-          }
-        }
+        "description": "Parameter tidak lengkap"
       },
       "500": {
-        "description": "Server error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": false
-                },
-                "error": {
-                  "type": "string",
-                  "example": "Gagal menghapus background"
-                }
-              }
-            }
-          }
-        }
+        "description": "Server error"
       }
     }
   }

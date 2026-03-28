@@ -5,19 +5,19 @@ module.exports = function (app) {
   const API_URL = "https://www.neoapis.xyz/api/tools/removebg?url=";
 
   const headers = {
-    "User-Agent": "Mozilla/5.0",
-    "Accept": "application/json, text/plain, */*"
+    "User-Agent": "Mozilla/5.0"
   };
 
   async function removeBG(imageUrl) {
-    const { data } = await axios.get(
+    const response = await axios.get(
       API_URL + encodeURIComponent(imageUrl),
       {
         headers,
+        responseType: "arraybuffer", // 🔥 penting!
         timeout: 20000
       }
     );
-    return data;
+    return response;
   }
 
   app.get("/tools/removebg", async (req, res) => {
@@ -33,17 +33,9 @@ module.exports = function (app) {
     try {
       const result = await removeBG(url);
 
-      if (!result?.status || !result?.data) {
-        return res.status(500).json({
-          status: false,
-          error: "Gagal menghapus background"
-        });
-      }
-
-      res.json({
-        status: true,
-        result: result.data
-      });
+      // 🔥 kirim langsung sebagai image
+      res.set("Content-Type", "image/png");
+      res.send(result.data);
 
     } catch (err) {
       res.status(500).json({
