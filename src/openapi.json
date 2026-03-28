@@ -94,58 +94,6 @@
     }
   }
 },
-{
-  "/ai/gpt": {
-    "get": {
-      "summary": "AI GPT Response",
-      "description": "Mengirim pertanyaan ke AI dan mendapatkan jawaban.",
-      "tags": ["AI"],
-      "parameters": [
-        {
-          "in": "query",
-          "name": "text",
-          "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "description": "Pertanyaan untuk AI"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Berhasil mendapatkan jawaban AI",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "boolean",
-                    "example": true
-                  },
-                  "model": {
-                    "type": "string",
-                    "example": "AI Model"
-                  },
-                  "result": {
-                    "type": "string",
-                    "example": "AI adalah..."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Parameter tidak lengkap"
-        },
-        "500": {
-          "description": "Server error"
-        }
-      }
-    }
-  }
-},
 "/ai/venice": {
   "get": {
     "summary": "Venice AI Chat",
