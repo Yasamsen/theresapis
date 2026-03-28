@@ -1210,17 +1210,17 @@
 "/search/pinterest": {
   "get": {
     "summary": "Search Pinterest Images",
-    "description": "Scrape gambar Pinterest berdasarkan kata kunci dan mengembalikan array URL resolusi tinggi.",
+    "description": "Mencari gambar dari Pinterest berdasarkan kata kunci.",
     "tags": ["Search"],
     "parameters": [
       {
         "in": "query",
-        "name": "q",
+        "name": "query",
         "required": true,
         "schema": {
           "type": "string"
         },
-        "description": "Kata kunci pencarian, contoh: naruto, anime girl"
+        "description": "Kata kunci pencarian, contoh: Fubuki, anime girl"
       }
     ],
     "responses": {
@@ -1260,7 +1260,7 @@
                 },
                 "error": {
                   "type": "string",
-                  "example": "Parameter q wajib diisi"
+                  "example": "Parameter query wajib diisi"
                 }
               }
             }
@@ -1280,7 +1280,7 @@
                 },
                 "error": {
                   "type": "string",
-                  "example": "Request failed with status code 403"
+                  "example": "Gagal mengambil data Pinterest"
                 }
               }
             }
