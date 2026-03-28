@@ -4,19 +4,30 @@ module.exports = function (app) {
 
   const API_URL = "https://api-faa.my.id/faa/ai-hyper?text=";
 
-  async function aihyper(text) {
+async function aihyper(text) {
+  try {
     const { data } = await axios.get(
       API_URL + encodeURIComponent(text),
       {
         headers: {
-          "User-Agent": "Mozilla/5.0",
-          "Accept": "application/json"
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+          "Accept": "application/json, text/plain, */*",
+          "Referer": "https://api-faa.my.id/",
+          "Origin": "https://api-faa.my.id"
         },
         timeout: 30000
       }
     );
     return data;
+  } catch (err) {
+    console.log("AI-HYPER ERROR:", err.response?.status);
+
+    return {
+      status: false,
+      error: "API blocked / error"
+    };
   }
+}
 
   app.get("/ai/ai-hyper", async (req, res) => {
     const { text } = req.query;
