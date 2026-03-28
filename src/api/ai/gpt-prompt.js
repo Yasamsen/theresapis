@@ -4,39 +4,19 @@ module.exports = function (app) {
 
   const API_URL = "https://api-faa.my.id/faa/gpt-promt";
 
-async function gptPromt(prompt, text) {
-  try {
-    const { data } = await axios.get(
-      "https://api-faa.my.id/faa/gpt-promt",
-      {
-        params: {
-          prompt,
-          text
-        },
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-          "Accept": "application/json, text/plain, */*",
-          "Accept-Language": "en-US,en;q=0.9",
-          "Referer": "https://api-faa.my.id/",
-          "Origin": "https://api-faa.my.id",
-          "Connection": "keep-alive",
-          "Cache-Control": "no-cache"
-        },
-        timeout: 30000,
-        validateStatus: () => true // 🔥 penting
-      }
-    );
-
-    // 🔥 kalau 403, kasih info asli
-    if (data?.status === false) return data;
-
+  async function gptPromt(prompt, text) {
+    const { data } = await axios.get(API_URL, {
+      params: { prompt, text },
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json",
+        "Referer": "https://api-faa.my.id/",
+        "Origin": "https://api-faa.my.id"
+      },
+      timeout: 30000
+    });
     return data;
-
-  } catch (err) {
-    console.log("ERROR:", err.response?.status);
-    throw err;
   }
-}
 
   app.get("/ai/gpt-promt", async (req, res) => {
     const { prompt, text } = req.query;
@@ -54,7 +34,7 @@ async function gptPromt(prompt, text) {
       if (!result?.status) {
         return res.json({
           status: false,
-          error: "Gagal mendapatkan respon AI"
+          error: result?.message || "AI gagal merespon"
         });
       }
 
