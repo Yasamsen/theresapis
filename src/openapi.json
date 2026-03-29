@@ -1622,36 +1622,6 @@
     }
   }
 },
-  "/tools/cekhost": {
-    "get": {
-      "summary": "Cek Host (IP / Domain)",
-      "description": "Melakukan pengecekan status host dari berbagai server dunia.",
-      "tags": ["Tools"],
-      "parameters": [
-        {
-          "in": "query",
-          "name": "host",
-          "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "description": "Domain atau IP (contoh: google.com / 8.8.8.8)"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Berhasil",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
 "/tools/remini": {
   "get": {
     "summary": "Remini AI Image Processing",
