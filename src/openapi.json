@@ -157,66 +157,6 @@
     }
   }
 },
-  "/ai/gpt-promt": {
-    "get": {
-      "summary": "AI GPT Prompt",
-      "description": "Mengirim prompt dan text ke AI untuk mendapatkan respon.",
-      "tags": ["AI"],
-      "parameters": [
-        {
-          "in": "query",
-          "name": "prompt",
-          "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "description": "Instruksi atau gaya jawaban (contoh: Jawab seperti guru)"
-        },
-        {
-          "in": "query",
-          "name": "text",
-          "required": true,
-          "schema": {
-            "type": "string"
-          },
-          "description": "Pertanyaan utama"
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Berhasil mendapatkan respon AI",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "boolean",
-                    "example": true
-                  },
-                  "creator": {
-                    "type": "string",
-                    "example": "yasamDev"
-                  },
-                  "result": {
-                    "type": "string",
-                    "example": "AI adalah teknologi..."
-                  }
-                }
-              }
-            }
-          }
-        },
-        "400": {
-          "description": "Parameter tidak lengkap"
-        },
-        "500": {
-          "description": "Server error"
-        }
-      }
-    }
-  }
-},
 "/ai-image/editfoto": {
   "get": {
     "summary": "AI Edit Foto",
