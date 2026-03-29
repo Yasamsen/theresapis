@@ -14,7 +14,11 @@
     { "name": "Anime" },
     { "name": "Downloader" },
     { "name": "Image" },
-   { "name": "News" }
+   { "name": "News" },
+   { "name": "Tools" },
+   { "name": "Search" },
+   { "name": "Cloudflare" }    
+     
   ],
   "paths": {
       "/ai/copilot": {
@@ -208,46 +212,6 @@
         },
         "500": {
           "description": "Server error"
-        }
-      }
-    }
-  }
-},
-"/ai/ai-hyper": {
-  "get": {
-    "summary": "AI Hyper Chat",
-    "description": "Mengirim pertanyaan ke AI dan mendapatkan jawaban text.",
-    "tags": ["AI"],
-    "parameters": [
-      {
-        "in": "query",
-        "name": "text",
-        "required": true,
-        "schema": {
-          "type": "string"
-        },
-        "description": "Pertanyaan ke AI"
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "Berhasil mendapatkan respon AI",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "boolean",
-                  "example": true
-                },
-                "result": {
-                  "type": "string",
-                  "example": "Halo! Ada yang bisa saya bantu?"
-                }
-              }
-            }
-          }
         }
       }
     }
