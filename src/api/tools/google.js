@@ -14,36 +14,42 @@ module.exports = function (app) {
       'Referer': 'https://www.google.com/'
     };
   }
+app.get('/tools/google-image', async (req, res) => {
+  const { query } = req.query;
 
-  app.get('/tools/google-image', async (req, res) => {
-    const { query } = req.query;
+  if (!query) {
+    return res.status(400).json({
+      status: false,
+      error: 'Parameter query wajib diisi'
+    });
+  }
 
-    if (!query) {
-      return res.status(400).json({
-        status: false,
-        error: 'Parameter query wajib diisi'
-      });
-    }
-
-    for (let api of APIs) {
-      try {
-        const response = await axios.get(api, {
-          params: { query },
-          headers: headers(),
-          timeout: 10000
-        });
-
-        return res.json(response.data);
-
-      } catch (err) {
-        console.log(`Gagal dari ${api}`);
+  try {
+    const response = await axios.get('https://api-faa.my.id/faa/google-image', {
+      params: { query },
+      headers: {
+        'User-Agent': 'Mozilla/5.0'
       }
-    }
+    });
 
+    const data = response.data;
+
+    // 🔥 mapping jadi object biar rapi
+    const result = data.result.map((url, i) => ({
+      id: i + 1,
+      image: url
+    }));
+
+    res.json({
+      status: true,
+      total: result.length,
+      result
+    });
+
+  } catch (err) {
     res.status(500).json({
       status: false,
-      error: 'Semua API gagal / diblok'
+      error: 'Failed fetch Google Image API'
     });
-  });
-
-};
+  }
+});
