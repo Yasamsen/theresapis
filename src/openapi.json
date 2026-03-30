@@ -1816,6 +1816,56 @@
     }
   }
 },
+"/tools/tobersama-v2": {
+  "get": {
+    "summary": "Tobersama V2 Image",
+    "description": "Menggabungkan dua gambar menjadi satu dan mengembalikan hasil berupa image.",
+    "tags": ["Tools"],
+    "parameters": [
+      {
+        "name": "url1",
+        "in": "query",
+        "required": true,
+        "description": "URL gambar pertama",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "example": "https://files.catbox.moe/dh0v0p.jpg"
+      },
+      {
+        "name": "url2",
+        "in": "query",
+        "required": true,
+        "description": "URL gambar kedua",
+        "schema": {
+          "type": "string",
+          "format": "uri"
+        },
+        "example": "https://files.catbox.moe/dh0v0p.jpg"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil menggabungkan gambar",
+        "content": {
+          "image/png": {
+            "schema": {
+              "type": "string",
+              "format": "binary"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap"
+      },
+      "500": {
+        "description": "Gagal memproses request"
+      }
+    }
+  }
+},
 "/tools/brat": {
   "get": {
     "summary": "Brat Canvas",
