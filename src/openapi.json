@@ -1760,6 +1760,62 @@
     }
   }
 },
+"/tools/google-image": {
+  "get": {
+    "summary": "Google Image",
+    "description": "Mencari gambar dari Google berdasarkan keyword.",
+    "tags": ["Tools"],
+    "parameters": [
+      {
+        "name": "query",
+        "in": "query",
+        "description": "Keyword pencarian gambar",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "kucing lucu"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Respon berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "result": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/image.jpg"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap"
+      },
+      "500": {
+        "description": "Gagal memproses request"
+      }
+    }
+  }
+},
 "/tools/brat": {
   "get": {
     "summary": "Brat Canvas",
