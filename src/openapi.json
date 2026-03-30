@@ -1686,7 +1686,7 @@
   "get": {
     "summary": "Upload ke Catbox",
     "description": "Upload file dari URL ke catbox.moe",
-    "tags": ["Uploader"],
+    "tags": ["Tools"],
     "parameters": [
       {
         "name": "url",
@@ -1760,11 +1760,11 @@
     }
   }
 },
-"/tools/google-image": {
+"/search/google-image": {
   "get": {
     "summary": "Google Image",
     "description": "Mencari gambar dari Google berdasarkan keyword.",
-    "tags": ["Tools"],
+    "tags": ["Search"],
     "parameters": [
       {
         "name": "query",
@@ -1820,7 +1820,7 @@
   "get": {
     "summary": "Tobersama V2 Image",
     "description": "Menggabungkan dua gambar menjadi satu dan mengembalikan hasil berupa image.",
-    "tags": ["Tools"],
+    "tags": ["tools"],
     "parameters": [
       {
         "name": "url1",
@@ -1866,11 +1866,11 @@
     }
   }
 },
-"/tools/motivasi/random": {
+"/maker/motivasi/random": {
   "get": {
     "summary": "Kata Mutiara Random",
     "description": "Mengambil kata mutiara random dari internet (scrape aman).",
-    "tags": ["Motivasi"],
+    "tags": ["Maker"],
     "responses": {
       "200": {
         "description": "Berhasil",
