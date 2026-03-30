@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 
 module.exports = function (app) {
 
-  // 🔥 SCRAPER BING
+  // 🔥 BING HD SCRAPER
   async function scrapeBing(query) {
     const url = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}`;
 
@@ -16,17 +16,25 @@ module.exports = function (app) {
     const $ = cheerio.load(data);
     const results = [];
 
-    $('img').each((i, el) => {
-      const src = $(el).attr('src') || $(el).attr('data-src');
-      if (src && src.startsWith('http')) {
-        results.push(src);
+    $('.iusc').each((i, el) => {
+      const json = $(el).attr('m');
+
+      if (json) {
+        try {
+          const parsed = JSON.parse(json);
+
+          if (parsed.murl) {
+            results.push(parsed.murl); // 🔥 HD IMAGE
+          }
+
+        } catch {}
       }
     });
 
     return results;
   }
 
-  // 🔥 SCRAPER DUCKDUCKGO
+  // 🔥 DUCK SCRAPER (fallback)
   async function scrapeDuck(query) {
     const url = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&iax=images&ia=images`;
 
@@ -41,6 +49,7 @@ module.exports = function (app) {
 
     $('img').each((i, el) => {
       const src = $(el).attr('src') || $(el).attr('data-src');
+
       if (src && src.startsWith('http')) {
         results.push(src);
       }
@@ -49,7 +58,14 @@ module.exports = function (app) {
     return results;
   }
 
-  // 🔥 ENDPOINT
+  // 🔥 FILTER HD
+  function filterImages(list) {
+    return list.filter(url =>
+      url.match(/\.(jpg|jpeg|png|webp)/i)
+    );
+  }
+
+  // 🚀 ENDPOINT
   app.get('/tools/google-image', async (req, res) => {
     const { query } = req.query;
 
@@ -60,9 +76,11 @@ module.exports = function (app) {
       });
     }
 
-    // 🔥 TRY BING
+    // 🔥 1. BING (PRIORITAS)
     try {
-      const bing = await scrapeBing(query);
+      let bing = await scrapeBing(query);
+      bing = filterImages(bing);
+
       if (bing.length) {
         return res.json({
           status: true,
@@ -71,13 +89,16 @@ module.exports = function (app) {
           result: bing.slice(0, 10)
         });
       }
+
     } catch (e) {
       console.log('Bing gagal...');
     }
 
-    // 🔥 TRY DUCKDUCKGO
+    // 🔥 2. DUCK (FALLBACK)
     try {
-      const duck = await scrapeDuck(query);
+      let duck = await scrapeDuck(query);
+      duck = filterImages(duck);
+
       if (duck.length) {
         return res.json({
           status: true,
@@ -86,10 +107,12 @@ module.exports = function (app) {
           result: duck.slice(0, 10)
         });
       }
+
     } catch (e) {
       console.log('Duck gagal...');
     }
 
+    // ❌ ERROR FINAL
     res.status(500).json({
       status: false,
       error: 'Semua scraper gagal'
