@@ -1868,21 +1868,28 @@
 },
 "/tools/lirik": {
   "get": {
-    "summary": "Scrape Lirik Lagu",
-    "description": "Mengambil lirik lagu dan thumbnail dari Musixmatch berdasarkan judul lagu.",
+    "summary": "Get Lirik Lagu",
+    "description": "Mengambil lirik lagu berdasarkan artist dan judul lagu (tanpa scrape).",
     "tags": ["Search"],
     "parameters": [
       {
-        "name": "judul",
+        "name": "artist",
         "in": "query",
         "required": true,
         "schema": { "type": "string" },
-        "example": "Alan Walker Faded"
+        "example": "Alan Walker"
+      },
+      {
+        "name": "title",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" },
+        "example": "Faded"
       }
     ],
     "responses": {
       "200": {
-        "description": "Berhasil mengambil lirik",
+        "description": "Berhasil",
         "content": {
           "application/json": {
             "schema": {
@@ -1893,8 +1900,9 @@
                 "result": {
                   "type": "object",
                   "properties": {
-                    "thumb": { "type": "string", "format": "uri", "example": "https://.../cover.jpg" },
-                    "lirik": { "type": "string", "example": "These are the lyrics\nof the song..." }
+                    "artist": { "type": "string", "example": "Alan Walker" },
+                    "title": { "type": "string", "example": "Faded" },
+                    "lirik": { "type": "string", "example": "You were the shadow to my light..." }
                   }
                 }
               }
@@ -1902,8 +1910,9 @@
           }
         }
       },
-      "400": { "description": "Parameter judul wajib diisi" },
-      "500": { "description": "Server error / gagal scrape" }
+      "400": { "description": "Parameter wajib diisi" },
+      "404": { "description": "Lirik tidak ditemukan" },
+      "500": { "description": "Server error" }
     }
   }
 },
