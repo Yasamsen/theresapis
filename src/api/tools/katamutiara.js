@@ -1,6 +1,27 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
+async function translate(text) {
+  try {
+    const { data } = await axios.get(
+      "https://translate.googleapis.com/translate_a/single",
+      {
+        params: {
+          client: "gtx",
+          sl: "en",
+          tl: "id",
+          dt: "t",
+          q: text
+        }
+      }
+    );
+
+    return data[0].map(v => v[0]).join("");
+  } catch {
+    return text; // fallback kalau gagal
+  }
+}
+
 module.exports = function (app) {
 
   app.get("/tools/motivasi/random", async (req, res) => {
@@ -32,10 +53,16 @@ module.exports = function (app) {
 
       const random = hasil[Math.floor(Math.random() * hasil.length)];
 
+      // 🔥 translate ke Indo
+      const indo = await translate(random.kata);
+
       res.json({
         status: true,
         creator: "yasamDev",
-        result: random
+        result: {
+          kata: indo,
+          author: random.author
+        }
       });
 
     } catch (err) {
