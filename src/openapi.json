@@ -1866,6 +1866,82 @@
     }
   }
 },
+"/tools/bible-search": {
+  "get": {
+    "summary": "Search Ayat Alkitab",
+    "description": "Mencari ayat Alkitab berdasarkan kata kunci.",
+    "tags": ["Bible"],
+    "parameters": [
+      {
+        "name": "q",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" },
+        "example": "kasih"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": true },
+                "total": { "type": "number", "example": 5 },
+                "result": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "reference": { "type": "string", "example": "Yohanes 3:16" },
+                      "verse": { "type": "string", "example": "Karena begitu besar kasih Allah..." }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": { "description": "Parameter q wajib diisi" },
+      "500": { "description": "Server error" }
+    }
+  }
+},
+
+"/tools/bible-random": {
+  "get": {
+    "summary": "Random Ayat Menyentuh",
+    "description": "Mengambil ayat Alkitab secara acak yang menyentuh hati.",
+    "tags": ["Bible"],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": true },
+                "keyword": { "type": "string", "example": "harapan" },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "reference": { "type": "string", "example": "Mazmur 34:18" },
+                    "verse": { "type": "string", "example": "TUHAN itu dekat kepada orang yang patah hati..." }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": { "description": "Server error" }
+    }
+  }
+},
 "/tools/brat": {
   "get": {
     "summary": "Brat Canvas",
