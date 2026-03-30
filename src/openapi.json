@@ -1897,6 +1897,43 @@
     }
   }
 },
+"/tools/berita-lombok": {
+  "get": {
+    "summary": "Berita Lombok / NTB",
+    "description": "Mengambil berita terbaru seputar Lombok dan NTB.",
+    "tags": ["News"],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": true },
+                "creator": { "type": "string", "example": "yasamDev" },
+                "total": { "type": "number", "example": 10 },
+                "result": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": { "type": "string", "example": "Gempa Lombok..." },
+                      "link": { "type": "string", "example": "https://news..." },
+                      "pubDate": { "type": "string", "example": "Mon, 01 Jan 2025" },
+                      "source": { "type": "string", "example": "Kompas.com" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": { "description": "Server error" }
+    }
+  }
+},
 "/tools/lirik": {
   "get": {
     "summary": "Get Lirik Lagu",
