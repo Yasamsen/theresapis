@@ -1866,41 +1866,35 @@
     }
   }
 },
-"/tools/spotify-search": {
+"/tools/lirik": {
   "get": {
-    "summary": "Search Spotify",
-    "description": "Mencari lagu dari Spotify berdasarkan keyword.",
+    "summary": "Scrape Lirik Lagu",
+    "description": "Mengambil lirik lagu dan thumbnail dari Musixmatch berdasarkan judul lagu.",
     "tags": ["Search"],
     "parameters": [
       {
-        "name": "q",
+        "name": "judul",
         "in": "query",
         "required": true,
         "schema": { "type": "string" },
-        "example": "Alan Walker"
+        "example": "Alan Walker Faded"
       }
     ],
     "responses": {
       "200": {
-        "description": "Berhasil",
+        "description": "Berhasil mengambil lirik",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "properties": {
                 "status": { "type": "boolean", "example": true },
-                "total": { "type": "number", "example": 5 },
+                "creator": { "type": "string", "example": "yasamDev" },
                 "result": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "title": { "type": "string", "example": "Faded" },
-                      "artist": { "type": "string", "example": "Alan Walker" },
-                      "duration": { "type": "string", "example": "3:32" },
-                      "url": { "type": "string", "example": "https://open.spotify.com/..." },
-                      "thumbnail": { "type": "string", "format": "uri" }
-                    }
+                  "type": "object",
+                  "properties": {
+                    "thumb": { "type": "string", "format": "uri", "example": "https://.../cover.jpg" },
+                    "lirik": { "type": "string", "example": "These are the lyrics\nof the song..." }
                   }
                 }
               }
@@ -1908,8 +1902,8 @@
           }
         }
       },
-      "400": { "description": "Parameter q wajib diisi" },
-      "500": { "description": "Server error" }
+      "400": { "description": "Parameter judul wajib diisi" },
+      "500": { "description": "Server error / gagal scrape" }
     }
   }
 },
