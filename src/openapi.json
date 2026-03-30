@@ -613,7 +613,7 @@
 "/anime/kusonime": {
   "get": {
     "summary": "Search Anime Kusonime",
-    "description": "Mencari anime dari Kusonime berdasarkan keyword.",
+    "description": "Mencari anime dari Kusonime berdasarkan keyword yang diberikan.",
     "tags": ["Anime"],
     "parameters": [
       {
@@ -623,25 +623,37 @@
         "schema": {
           "type": "string"
         },
-        "example": "naruto"
+        "example": "naruto",
+        "description": "Kata kunci pencarian anime"
       }
     ],
     "responses": {
       "200": {
-        "description": "Berhasil",
+        "description": "Berhasil mendapatkan hasil pencarian",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/KusonimeSearch"
             }
+          },
+          "example": {
+            "status": true,
+            "total": 1,
+            "result": [
+              {
+                "title": "Naruto Shippuden Batch Subtitle Indonesia",
+                "link": "https://kusonime.com/xxxx",
+                "image": "https://kusonime.com/image.jpg"
+              }
+            ]
           }
         }
       },
       "400": {
-        "description": "Parameter tidak lengkap"
+        "description": "Parameter query tidak diisi"
       },
       "500": {
-        "description": "Server error"
+        "description": "Terjadi kesalahan pada server"
       }
     }
   }
@@ -650,7 +662,7 @@
 "/anime/kusonime-detail": {
   "get": {
     "summary": "Detail Anime Kusonime",
-    "description": "Mengambil detail anime dan link download dari Kusonime.",
+    "description": "Mengambil detail anime seperti judul, sinopsis, dan link download berdasarkan URL Kusonime.",
     "tags": ["Anime"],
     "parameters": [
       {
@@ -658,27 +670,53 @@
         "name": "url",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "format": "uri"
         },
-        "example": "https://kusonime.com/..."
+        "example": "https://kusonime.com/naruto-shippuden-batch-subtitle-indonesia/",
+        "description": "URL detail anime dari Kusonime (WAJIB di-encode)"
       }
     ],
     "responses": {
       "200": {
-        "description": "Berhasil",
+        "description": "Berhasil mendapatkan detail anime",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/KusonimeDetail"
             }
+          },
+          "example": {
+            "status": true,
+            "result": {
+              "title": "Naruto Shippuden Batch Subtitle Indonesia",
+              "image": "https://kusonime.com/image.jpg",
+              "sinopsis": "Cerita tentang Naruto...",
+              "download": [
+                {
+                  "batch": "Batch 1",
+                  "qualities": [
+                    {
+                      "quality": "360p",
+                      "links": [
+                        {
+                          "provider": "Google Drive",
+                          "url": "https://drive.google.com/xxxx"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
           }
         }
       },
       "400": {
-        "description": "Parameter tidak lengkap"
+        "description": "Parameter url tidak valid / kosong"
       },
       "500": {
-        "description": "Server error"
+        "description": "Terjadi kesalahan pada server"
       }
     }
   }

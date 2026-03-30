@@ -5,6 +5,15 @@ module.exports = function (app) {
 
   const BASE = 'https://kusonime.com';
 
+  function isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async function searchKusonime(query) {
     const { data } = await axios.get(`${BASE}/?s=${encodeURIComponent(query)}&post_type=post`, {
       headers: {
@@ -51,10 +60,10 @@ module.exports = function (app) {
         const links = [];
         $(q).find('a').each((_, a) => {
           const provider = $(a).text().trim();
-          const url = $(a).attr('href');
+          const linkUrl = $(a).attr('href');
 
-          if (provider && url) {
-            links.push({ provider, url });
+          if (provider && linkUrl) {
+            links.push({ provider, url: linkUrl });
           }
         });
 
@@ -99,9 +108,9 @@ module.exports = function (app) {
     }
   });
 
-  // 📄 DETAIL
+  // 📄 DETAIL (FIXED)
   app.get('/anime/kusonime-detail', async (req, res) => {
-    const { url } = req.query;
+    let { url } = req.query;
 
     if (!url) {
       return res.status(400).json({
@@ -111,6 +120,15 @@ module.exports = function (app) {
     }
 
     try {
+      url = decodeURIComponent(url);
+
+      if (!isValidUrl(url)) {
+        return res.status(400).json({
+          status: false,
+          error: 'Invalid URL'
+        });
+      }
+
       const result = await detailKusonime(url);
 
       res.json({
