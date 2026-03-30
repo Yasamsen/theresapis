@@ -3,7 +3,18 @@ const cheerio = require('cheerio');
 
 module.exports = function(app) {
 
-  // 🎵 Endpoint Lirik
+  const headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+                  "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Cache-Control": "no-cache",
+    "Pragma": "no-cache",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Referer": "https://www.google.com/"
+  };
+
   app.get('/tools/lirik', async (req, res) => {
     const { judul } = req.query;
 
@@ -16,21 +27,35 @@ module.exports = function(app) {
 
     try {
       const hasil = {};
-      const searchUrl = 'https://www.musixmatch.com/search/' + encodeURIComponent(judul);
+      const base = 'https://www.musixmatch.com';
 
-      const { data: searchData } = await axios.get(searchUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+      // 🔎 Search
+      const { data: searchData } = await axios.get(
+        base + '/search/' + encodeURIComponent(judul),
+        { headers }
+      );
+
       const $ = cheerio.load(searchData);
 
-      const limk = 'https://www.musixmatch.com';
-      const link = limk + $('div.media-card-body > div > h2').find('a').attr('href');
+      const path = $('a.title').attr('href') ||
+                   $('div.media-card-body a').attr('href');
 
-      const { data: lyricPage } = await axios.get(link, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+      if (!path) throw new Error('Lagu tidak ditemukan');
+
+      const link = base + path;
+
+      // 🎵 Ambil halaman lirik
+      const { data: lyricPage } = await axios.get(link, { headers });
       const $$ = cheerio.load(lyricPage);
 
-      hasil.thumb = 'https:' + $$('div.col-sm-1.col-md-2.col-ml-3.col-lg-3.static-position > div > div > div').find('img').attr('src');
-      $$('div.col-sm-10.col-md-8.col-ml-6.col-lg-6 > div.mxm-lyrics').each(function() {
-        hasil.lirik = $$(this).find('span > p > span').text() + '\n' + $$(this).find('span > div > p > span').text();
+      hasil.thumb = 'https:' + ($$('img.mxm-track-cover__image').attr('src') || '');
+
+      let lirik = '';
+      $$('div.mxm-lyrics span').each((i, el) => {
+        lirik += $$(el).text() + '\n';
       });
+
+      hasil.lirik = lirik.trim();
 
       res.json({
         status: true,
@@ -41,6 +66,7 @@ module.exports = function(app) {
     } catch (err) {
       res.status(500).json({
         status: false,
+        creator: 'yasamDev',
         error: err.message
       });
     }
