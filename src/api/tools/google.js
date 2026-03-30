@@ -1,55 +1,99 @@
 const axios = require('axios');
+const cheerio = require('cheerio');
 
 module.exports = function (app) {
 
-  const APIs = [
-    'https://api-faa.my.id/faa/google-image',
-    'https://api.ryzendesu.vip/api/search/googleimage'
-  ];
+  // 🔥 SCRAPER BING
+  async function scrapeBing(query) {
+    const url = `https://www.bing.com/images/search?q=${encodeURIComponent(query)}`;
 
-  function headers() {
-    return {
-      'User-Agent': 'Mozilla/5.0',
-      'Accept': 'application/json',
-      'Referer': 'https://www.google.com/'
-    };
-  }
-app.get('/tools/google-image', async (req, res) => {
-  const { query } = req.query;
-
-  if (!query) {
-    return res.status(400).json({
-      status: false,
-      error: 'Parameter query wajib diisi'
-    });
-  }
-
-  try {
-    const response = await axios.get('https://api-faa.my.id/faa/google-image', {
-      params: { query },
+    const { data } = await axios.get(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0'
       }
     });
 
-    const data = response.data;
+    const $ = cheerio.load(data);
+    const results = [];
 
-    // 🔥 mapping jadi object biar rapi
-    const result = data.result.map((url, i) => ({
-      id: i + 1,
-      image: url
-    }));
-
-    res.json({
-      status: true,
-      total: result.length,
-      result
+    $('img').each((i, el) => {
+      const src = $(el).attr('src') || $(el).attr('data-src');
+      if (src && src.startsWith('http')) {
+        results.push(src);
+      }
     });
 
-  } catch (err) {
+    return results;
+  }
+
+  // 🔥 SCRAPER DUCKDUCKGO
+  async function scrapeDuck(query) {
+    const url = `https://duckduckgo.com/?q=${encodeURIComponent(query)}&iax=images&ia=images`;
+
+    const { data } = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0'
+      }
+    });
+
+    const $ = cheerio.load(data);
+    const results = [];
+
+    $('img').each((i, el) => {
+      const src = $(el).attr('src') || $(el).attr('data-src');
+      if (src && src.startsWith('http')) {
+        results.push(src);
+      }
+    });
+
+    return results;
+  }
+
+  // 🔥 ENDPOINT
+  app.get('/tools/google-image', async (req, res) => {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.status(400).json({
+        status: false,
+        error: 'Parameter query wajib diisi'
+      });
+    }
+
+    // 🔥 TRY BING
+    try {
+      const bing = await scrapeBing(query);
+      if (bing.length) {
+        return res.json({
+          status: true,
+          source: 'bing',
+          total: bing.length,
+          result: bing.slice(0, 10)
+        });
+      }
+    } catch (e) {
+      console.log('Bing gagal...');
+    }
+
+    // 🔥 TRY DUCKDUCKGO
+    try {
+      const duck = await scrapeDuck(query);
+      if (duck.length) {
+        return res.json({
+          status: true,
+          source: 'duckduckgo',
+          total: duck.length,
+          result: duck.slice(0, 10)
+        });
+      }
+    } catch (e) {
+      console.log('Duck gagal...');
+    }
+
     res.status(500).json({
       status: false,
-      error: 'Failed fetch Google Image API'
+      error: 'Semua scraper gagal'
     });
-  }
-});
+  });
+
+};
