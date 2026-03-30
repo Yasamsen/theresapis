@@ -15,47 +15,47 @@ module.exports = function (app) {
         });
       }
 
-      const apiUrl = `${BASE}?url1=${encodeURIComponent(url1)}&url2=${encodeURIComponent(url2)}`;
+      // ❌ jangan encode 2x
+      const apiUrl = `${BASE}?url1=${url1}&url2=${url2}`;
 
-      const response = await axios.get(apiUrl, {
-  responseType: 'arraybuffer',
-  headers: {
-    "User-Agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
-      "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      const response = await axios({
+        method: 'GET',
+        url: apiUrl,
+        responseType: 'stream', // pakai stream untuk image besar
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
+            "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Accept":
+            "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.9",
+          "Referer": "https://www.google.com/",
+          "Origin": "https://www.google.com",
+          "Connection": "keep-alive",
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache",
+          "Sec-Fetch-Dest": "image",
+          "Sec-Fetch-Mode": "no-cors",
+          "Sec-Fetch-Site": "cross-site"
+        },
+        maxRedirects: 5,
+        timeout: 30000
+      });
 
-    "Accept":
-      "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
-
-    "Accept-Language": "en-US,en;q=0.9",
-
-    "Accept-Encoding": "gzip, deflate, br",
-
-    "Referer": "https://www.google.com/",
-
-    "Origin": "https://www.google.com",
-
-    "Connection": "keep-alive",
-
-    "Cache-Control": "no-cache",
-
-    "Pragma": "no-cache"
-  },
-  timeout: 20000
-});
-
-      // 🔥 kirim langsung image
-      res.setHeader('Content-Type', 'image/png');
-      res.send(response.data);
+      // 🔥 langsung pipe ke response
+      res.setHeader('Content-Type', response.headers['content-type'] || 'image/png');
+      response.data.pipe(res);
 
     } catch (err) {
-      console.error(err.response?.status || err.message);
+      console.error("Tobersama V2 ERROR:", err.response?.status || err.message);
 
       res.status(500).json({
         status: false,
-        error: 'Failed fetch Tobersama V2 API'
+        creator: "yasamDev",
+        error: err.response?.status
+          ? `Upstream error ${err.response.status}`
+          : 'Failed fetch Tobersama V2 API'
       });
     }
   });
-
 };
