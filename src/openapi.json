@@ -279,6 +279,70 @@
     }
   }
 },
+"/ai/gemini": {
+  "get": {
+    "summary": "AI Gemini",
+    "description": "Menghasilkan jawaban AI menggunakan Gemini berdasarkan teks input.",
+    "tags": ["AI"],
+    "parameters": [
+      {
+        "name": "text",
+        "in": "query",
+        "description": "Teks atau pertanyaan yang ingin ditanyakan ke AI",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "apa itu ai"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Respon berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "creator": {
+                  "type": "string",
+                  "example": "Neo-APIs"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "answer": {
+                      "type": "string",
+                      "example": "AI adalah teknologi yang memungkinkan komputer untuk berpikir seperti manusia..."
+                    },
+                    "sessionId": {
+                      "type": "string",
+                      "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    }
+                  }
+                },
+                "timestamp": {
+                  "type": "string",
+                  "example": "2026-03-30T11:11:43.397Z"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter text tidak disertakan"
+      },
+      "500": {
+        "description": "Gagal memproses request"
+      }
+    }
+  }
+},
 "/ai/deepai": {
   "get": {
     "summary": "AI DeepAI Response",
