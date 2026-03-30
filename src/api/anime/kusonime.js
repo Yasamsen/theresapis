@@ -5,6 +5,19 @@ module.exports = function (app) {
 
   const BASE = 'https://kusonime.com';
 
+  // 🔥 AXIOS INSTANCE SUPER HEADER
+  const axiosInstance = axios.create({
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+      'Accept-Language': 'en-US,en;q=0.9,id;q=0.8',
+      'Connection': 'keep-alive',
+      'Referer': 'https://www.google.com/',
+      'Cache-Control': 'no-cache'
+    },
+    timeout: 15000
+  });
+
   function isValidUrl(url) {
     try {
       new URL(url);
@@ -14,14 +27,25 @@ module.exports = function (app) {
     }
   }
 
-  async function searchKusonime(query) {
-    const { data } = await axios.get(`${BASE}/?s=${encodeURIComponent(query)}&post_type=post`, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0'
+  // 🔥 FETCH DENGAN RETRY
+  async function fetchWithRetry(url, retries = 2) {
+    try {
+      const { data } = await axiosInstance.get(url);
+      return data;
+    } catch (err) {
+      if (retries > 0) {
+        console.log('Retrying...', url);
+        return await fetchWithRetry(url, retries - 1);
       }
-    });
+      throw err;
+    }
+  }
 
-    const $ = cheerio.load(data);
+  // 🔍 SEARCH
+  async function searchKusonime(query) {
+    const html = await fetchWithRetry(`${BASE}/?s=${encodeURIComponent(query)}&post_type=post`);
+
+    const $ = cheerio.load(html);
     const results = [];
 
     $('.kover').each((_, el) => {
@@ -35,14 +59,11 @@ module.exports = function (app) {
     return results;
   }
 
+  // 📄 DETAIL
   async function detailKusonime(url) {
-    const { data } = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0'
-      }
-    });
+    const html = await fetchWithRetry(url);
 
-    const $ = cheerio.load(data);
+    const $ = cheerio.load(html);
 
     const title = $('h1.jdlz').text().trim();
     const image = $('.post-thumb img').attr('src');
@@ -80,7 +101,7 @@ module.exports = function (app) {
     return { title, image, sinopsis, download };
   }
 
-  // 🔍 SEARCH
+  // 🔍 SEARCH ENDPOINT
   app.get('/anime/kusonime', async (req, res) => {
     const { query } = req.query;
 
@@ -108,7 +129,7 @@ module.exports = function (app) {
     }
   });
 
-  // 📄 DETAIL (FIXED)
+  // 📄 DETAIL ENDPOINT
   app.get('/anime/kusonime-detail', async (req, res) => {
     let { url } = req.query;
 
