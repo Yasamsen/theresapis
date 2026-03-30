@@ -1869,7 +1869,7 @@
 "/tools/motivasi/random": {
   "get": {
     "summary": "Kata Mutiara Random",
-    "description": "Mengambil satu kata mutiara secara acak yang menyentuh hati.",
+    "description": "Mengambil kata mutiara random dari internet (scrape aman).",
     "tags": ["Motivasi"],
     "responses": {
       "200": {
@@ -1884,8 +1884,8 @@
                 "result": {
                   "type": "object",
                   "properties": {
-                    "kata": { "type": "string", "example": "Hidup adalah perjalanan..." },
-                    "author": { "type": "string", "example": "Anonim" }
+                    "kata": { "type": "string", "example": "Life is what happens..." },
+                    "author": { "type": "string", "example": "John Lennon" }
                   }
                 }
               }
@@ -1893,7 +1893,6 @@
           }
         }
       },
-      "404": { "description": "Data tidak ditemukan" },
       "500": { "description": "Server error" }
     }
   }
