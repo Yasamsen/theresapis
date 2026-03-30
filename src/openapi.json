@@ -610,6 +610,79 @@
     }
   }
 },
+"/anime/kusonime": {
+  "get": {
+    "summary": "Search Anime Kusonime",
+    "description": "Mencari anime dari Kusonime berdasarkan keyword.",
+    "tags": ["Anime"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "naruto"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/KusonimeSearch"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    }
+  }
+},
+
+"/anime/kusonime-detail": {
+  "get": {
+    "summary": "Detail Anime Kusonime",
+    "description": "Mengambil detail anime dan link download dari Kusonime.",
+    "tags": ["Anime"],
+    "parameters": [
+      {
+        "in": "query",
+        "name": "url",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "https://kusonime.com/..."
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/KusonimeDetail"
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Parameter tidak lengkap"
+      },
+      "500": {
+        "description": "Server error"
+      }
+    }
+  }
+},
 "/anime/alya": {
   "get": {
     "summary": "alya",
