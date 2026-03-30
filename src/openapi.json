@@ -1866,18 +1866,18 @@
     }
   }
 },
-"/tools/bible-search": {
+"/tools/spotify-search": {
   "get": {
-    "summary": "Search Ayat Alkitab",
-    "description": "Mencari ayat Alkitab berdasarkan kata kunci.",
-    "tags": ["Bible"],
+    "summary": "Search Spotify",
+    "description": "Mencari lagu dari Spotify berdasarkan keyword.",
+    "tags": ["Search"],
     "parameters": [
       {
         "name": "q",
         "in": "query",
         "required": true,
         "schema": { "type": "string" },
-        "example": "kasih"
+        "example": "Alan Walker"
       }
     ],
     "responses": {
@@ -1895,8 +1895,11 @@
                   "items": {
                     "type": "object",
                     "properties": {
-                      "reference": { "type": "string", "example": "Yohanes 3:16" },
-                      "verse": { "type": "string", "example": "Karena begitu besar kasih Allah..." }
+                      "title": { "type": "string", "example": "Faded" },
+                      "artist": { "type": "string", "example": "Alan Walker" },
+                      "duration": { "type": "string", "example": "3:32" },
+                      "url": { "type": "string", "example": "https://open.spotify.com/..." },
+                      "thumbnail": { "type": "string", "format": "uri" }
                     }
                   }
                 }
@@ -1910,43 +1913,11 @@
     }
   }
 },
-
-"/tools/bible-random": {
-  "get": {
-    "summary": "Random Ayat Menyentuh",
-    "description": "Mengambil ayat Alkitab secara acak yang menyentuh hati.",
-    "tags": ["Bible"],
-    "responses": {
-      "200": {
-        "description": "Berhasil",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": { "type": "boolean", "example": true },
-                "keyword": { "type": "string", "example": "harapan" },
-                "result": {
-                  "type": "object",
-                  "properties": {
-                    "reference": { "type": "string", "example": "Mazmur 34:18" },
-                    "verse": { "type": "string", "example": "TUHAN itu dekat kepada orang yang patah hati..." }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "500": { "description": "Server error" }
-    }
-  }
-},
 "/tools/brat": {
   "get": {
     "summary": "Brat Canvas",
     "description": "Generate gambar teks (brat) dari input user dan mengembalikan image langsung.",
-    "tags": ["Maker"],
+    "tags": ["Tools"],
     "parameters": [
       {
         "name": "q",
