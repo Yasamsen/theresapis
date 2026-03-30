@@ -1866,6 +1866,38 @@
     }
   }
 },
+"/tools/motivasi/random": {
+  "get": {
+    "summary": "Kata Mutiara Random",
+    "description": "Mengambil satu kata mutiara secara acak yang menyentuh hati.",
+    "tags": ["Motivasi"],
+    "responses": {
+      "200": {
+        "description": "Berhasil",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "boolean", "example": true },
+                "creator": { "type": "string", "example": "yasamDev" },
+                "result": {
+                  "type": "object",
+                  "properties": {
+                    "kata": { "type": "string", "example": "Hidup adalah perjalanan..." },
+                    "author": { "type": "string", "example": "Anonim" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": { "description": "Data tidak ditemukan" },
+      "500": { "description": "Server error" }
+    }
+  }
+},
 "/tools/lirik": {
   "get": {
     "summary": "Get Lirik Lagu",
