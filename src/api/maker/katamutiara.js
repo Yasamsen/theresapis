@@ -24,7 +24,7 @@ async function translate(text) {
 
 module.exports = function (app) {
 
-  app.get("/tools/motivasi/random", async (req, res) => {
+  app.get("/search/motivasi/random", async (req, res) => {
     try {
       const { data } = await axios.get("http://quotes.toscrape.com/", {
         headers: {
