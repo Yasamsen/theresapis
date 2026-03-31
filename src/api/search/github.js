@@ -1,68 +1,46 @@
 const axios = require("axios");
-const cheerio = require("cheerio");
 
 module.exports = function (app) {
 
-  async function searchRepo(query) {
-    const { data } = await axios.get(
-      "https://github.com/search?q=" + encodeURIComponent(query) + "&type=repositories",
-      {
-        headers: {
-          "User-Agent": "Mozilla/5.0"
-        }
-      }
-    );
+  const headers = {
+    "User-Agent": "yasamDev",
+    "Accept": "application/vnd.github+json"
+  };
 
-    const $ = cheerio.load(data);
-    let hasil = [];
-
-    $("li.repo-list-item").each((i, el) => {
-      const name = $(el).find("a.v-align-middle").text().trim();
-      const link = "https://github.com" + $(el).find("a.v-align-middle").attr("href");
-      const desc = $(el).find("p.mb-1").text().trim();
-      const lang = $(el).find("[itemprop=programmingLanguage]").text().trim();
-
-      if (name) {
-        hasil.push({
-          name,
-          description: desc || null,
-          language: lang || null,
-          url: link
-        });
-      }
+  async function searchRepo(q) {
+    const { data } = await axios.get("https://api.github.com/search/repositories", {
+      params: {
+        q,
+        per_page: 10
+      },
+      headers
     });
 
-    return hasil;
+    return data.items.map(v => ({
+      name: v.full_name,
+      description: v.description,
+      language: v.language,
+      stars: v.stargazers_count,
+      forks: v.forks_count,
+      url: v.html_url
+    }));
   }
 
-  async function searchUser(query) {
-    const { data } = await axios.get(
-      "https://github.com/search?q=" + encodeURIComponent(query) + "&type=users",
-      {
-        headers: {
-          "User-Agent": "Mozilla/5.0"
-        }
-      }
-    );
-
-    const $ = cheerio.load(data);
-    let hasil = [];
-
-    $("div.user-list-item").each((i, el) => {
-      const username = $(el).find("a.mr-1").text().trim();
-      const link = "https://github.com" + $(el).find("a.mr-1").attr("href");
-      const bio = $(el).find("p.mb-1").text().trim();
-
-      if (username) {
-        hasil.push({
-          username,
-          bio: bio || null,
-          url: link
-        });
-      }
+  async function searchUser(q) {
+    const { data } = await axios.get("https://api.github.com/search/users", {
+      params: {
+        q,
+        per_page: 10
+      },
+      headers
     });
 
-    return hasil;
+    return data.items.map(v => ({
+      username: v.login,
+      avatar: v.avatar_url,
+      url: v.html_url,
+      type: v.type
+    }));
   }
 
   app.get("/tools/github-search", async (req, res) => {
@@ -96,7 +74,7 @@ module.exports = function (app) {
       res.status(500).json({
         status: false,
         creator: "yasamDev",
-        error: err.message
+        error: err.response?.data?.message || err.message
       });
     }
   });

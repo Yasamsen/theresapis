@@ -1868,7 +1868,7 @@
 "/tools/github-search": {
   "get": {
     "summary": "Search GitHub",
-    "description": "Mencari repository atau user GitHub.",
+    "description": "Mencari repository atau user dari GitHub (official API).",
     "tags": ["Search"],
     "parameters": [
       {
