@@ -1865,6 +1865,34 @@
     }
   }
 },
+"/tools/github-search": {
+  "get": {
+    "summary": "Search GitHub",
+    "description": "Mencari repository atau user GitHub.",
+    "tags": ["Search"],
+    "parameters": [
+      {
+        "name": "q",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" },
+        "example": "nodejs"
+      },
+      {
+        "name": "type",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string", "enum": ["repo", "user"] },
+        "example": "repo"
+      }
+    ],
+    "responses": {
+      "200": { "description": "Berhasil" },
+      "400": { "description": "Parameter q wajib diisi" },
+      "500": { "description": "Server error" }
+    }
+  }
+}
 "/tools/tobersama-v2": {
   "get": {
     "summary": "Tobersama V2 Image",
