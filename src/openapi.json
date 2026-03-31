@@ -1886,6 +1886,35 @@
     }
   }
 },
+"/tools/npmd": {
+  "get": {
+    "summary": "NPM Package Info",
+    "description": "Mengambil info package dan link download dari npm.",
+    "tags": ["Tools"],
+    "parameters": [
+      {
+        "name": "package",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" },
+        "example": "axios"
+      },
+      {
+        "name": "version",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string" },
+        "example": "1.6.0"
+      }
+    ],
+    "responses": {
+      "200": { "description": "Berhasil" },
+      "400": { "description": "Parameter kurang" },
+      "404": { "description": "Versi tidak ditemukan" },
+      "500": { "description": "Server error" }
+    }
+  }
+},
 "/tools/github-search": {
   "get": {
     "summary": "Search GitHub",
