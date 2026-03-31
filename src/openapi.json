@@ -1886,6 +1886,34 @@
     }
   }
 },
+"/tools/translate": {
+  "get": {
+    "summary": "Translate Text",
+    "description": "Menerjemahkan teks ke bahasa lain (auto detect).",
+    "tags": ["Tools"],
+    "parameters": [
+      {
+        "name": "text",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" },
+        "example": "Hello world"
+      },
+      {
+        "name": "to",
+        "in": "query",
+        "required": false,
+        "schema": { "type": "string" },
+        "example": "id"
+      }
+    ],
+    "responses": {
+      "200": { "description": "Berhasil" },
+      "400": { "description": "Parameter kurang" },
+      "500": { "description": "Server error" }
+    }
+  }
+},
 "/tools/npmd": {
   "get": {
     "summary": "NPM Package Info",
