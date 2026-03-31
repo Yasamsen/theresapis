@@ -1890,7 +1890,7 @@
   "get": {
     "summary": "NPM Package Info",
     "description": "Mengambil info package dan link download dari npm.",
-    "tags": ["Tools"],
+    "tags": ["Search"],
     "parameters": [
       {
         "name": "package",
