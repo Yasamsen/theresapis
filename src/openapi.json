@@ -1865,6 +1865,17 @@
     }
   }
 },
+"/tools/emas-antam": {
+  "get": {
+    "summary": "Harga Emas Antam Real-Time",
+    "description": "Scrape harga emas terbaru dari Logam Mulia.",
+    "tags": ["Finance"],
+    "responses": {
+      "200": { "description": "Berhasil" },
+      "500": { "description": "Gagal scrape" }
+    }
+  }
+},
 "/tools/pastebin": {
   "get": {
     "summary": "Get Pastebin",
