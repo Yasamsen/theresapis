@@ -1865,6 +1865,27 @@
     }
   }
 },
+"/tools/pastebin": {
+  "get": {
+    "summary": "Get Pastebin",
+    "description": "Mengambil isi pastebin dari link atau ID.",
+    "tags": ["Tools"],
+    "parameters": [
+      {
+        "name": "url",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" },
+        "example": "https://pastebin.com/fpUF4WS0"
+      }
+    ],
+    "responses": {
+      "200": { "description": "Berhasil" },
+      "400": { "description": "Parameter url wajib diisi" },
+      "500": { "description": "Server error" }
+    }
+  }
+},
 "/tools/github-search": {
   "get": {
     "summary": "Search GitHub",
