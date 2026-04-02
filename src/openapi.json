@@ -1865,11 +1865,11 @@
     }
   }
 },
-"/tools/emas-antam": {
+"/search/emas-antam": {
   "get": {
     "summary": "Harga Emas Antam Real-Time",
     "description": "Scrape harga emas terbaru dari Logam Mulia.",
-    "tags": ["Finance"],
+    "tags": ["Search"],
     "responses": {
       "200": { "description": "Berhasil" },
       "500": { "description": "Gagal scrape" }
@@ -1925,7 +1925,7 @@
     }
   }
 },
-"/tools/npmd": {
+"/search/npmd": {
   "get": {
     "summary": "NPM Package Info",
     "description": "Mengambil info package dan link download dari npm.",
@@ -1954,7 +1954,7 @@
     }
   }
 },
-"/tools/github-search": {
+"/search/github-search": {
   "get": {
     "summary": "Search GitHub",
     "description": "Mencari repository atau user dari GitHub (official API).",
@@ -1986,7 +1986,7 @@
   "get": {
     "summary": "Tobersama V2 Image",
     "description": "Menggabungkan dua gambar menjadi satu dan mengembalikan hasil berupa image.",
-    "tags": ["tools"],
+    "tags": ["Tools"],
     "parameters": [
       {
         "name": "url1",
@@ -2100,7 +2100,7 @@
     }
   }
 },
-"/tools/lirik": {
+"/search/lirik": {
   "get": {
     "summary": "Get Lirik Lagu",
     "description": "Mengambil lirik lagu berdasarkan artist dan judul lagu (tanpa scrape).",

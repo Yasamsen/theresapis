@@ -6,7 +6,7 @@ module.exports = function(app) {
         try {
             // Ambil daftar URL dari GitHub
             const { data } = await axios.get(
-                "https://raw.githubusercontent.com/mamixx15/papayang/refs/heads/main/pap-ayang.json"
+                "https://raw.githubusercontent.com/Yasamsen/media-repo/favorite/main/api.json"
             );
 
             if (!data || !Array.isArray(data) || data.length === 0) {

@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 
 module.exports = function (app) {
 
-  app.get("/tools/emas-antam", async (req, res) => {
+  app.get("/search/emas-antam", async (req, res) => {
 
     try {
       const { data } = await axios.get("https://www.logammulia.com/id/harga-emas-hari-ini", {

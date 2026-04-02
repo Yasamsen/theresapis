@@ -4,7 +4,7 @@ module.exports = function (app) {
 
   const API_URL = "https://api.lyrics.ovh/v1/";
 
-  app.get("/tools/lirik", async (req, res) => {
+  app.get("/search/lirik", async (req, res) => {
     const { artist, title } = req.query;
 
     if (!artist || !title) {

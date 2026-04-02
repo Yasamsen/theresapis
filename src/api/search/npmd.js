@@ -2,7 +2,7 @@ const axios = require("axios");
 
 module.exports = function (app) {
 
-  app.get("/tools/npmd", async (req, res) => {
+  app.get("/search/npmd", async (req, res) => {
     const { package: pkg, version } = req.query;
 
     if (!pkg) {
