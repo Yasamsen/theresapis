@@ -1,5 +1,6 @@
 const axios = require("axios")
 const cheerio = require("cheerio")
+const crypto = require("crypto")
 
 module.exports = (app) => {
 
@@ -16,10 +17,26 @@ module.exports = (app) => {
 
       const { data } = await axios.get(baseUrl, {
         headers: {
-          "User-Agent": "Mozilla/5.0",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+          "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+          "Accept-Encoding": "gzip, deflate, br",
+          "Connection": "keep-alive",
+          "Upgrade-Insecure-Requests": "1",
+          "Referer": "https://www.google.com/",
+          "Sec-Fetch-Dest": "document",
+          "Sec-Fetch-Mode": "navigate",
+          "Sec-Fetch-Site": "none",
+          "Sec-Fetch-User": "?1",
           "Cookie": cookies()
-        }
+        },
+        timeout: 30000,
+        validateStatus: () => true // biar ga auto throw
       })
+
+      if (data.includes("Just a moment") || data.includes("cf-challenge")) {
+        throw new Error("Blocked by Cloudflare")
+      }
 
       const $ = cheerio.load(data)
 
@@ -45,56 +62,24 @@ module.exports = (app) => {
         if (items.length) stock[name] = items
       })
 
-      let craving = []
-      $("#craving_list li").each((i, li) => {
-        let n = $(li).find("span:nth-child(2)").text().trim()
-        let img = $(li).find("img").attr("src")
-
-        if (n && n !== "No accepted plants right now.")
-          craving.push({
-            name: n,
-            image: img ? (img.startsWith("http") ? img : baseUrl + img) : null
-          })
-      })
-
-      if (craving.length) stock["Craving"] = craving
-
-      $(".mt-16 .space-y-6 li").each((i, el) => {
-        let t = $(el).find("a").text().trim()
-        let l = $(el).find("a").attr("href")
-        let d = $(el).find("p").text().trim()
-
-        if (t && l) blog.push({
-          title: t,
-          link: l.startsWith("http") ? l : baseUrl + l,
-          description: d
-        })
-      })
-
-      $(".grid.md\\:grid-cols-3.gap-6.mt-14 article").each((i, el) => {
-        let t = $(el).find("h3").text().trim()
-        let d = $(el).find("p").text().trim()
-        if (t) info.push({ title: t, description: d })
-      })
-
       res.json({
         status: true,
         creator: "yasamDev",
         result: {
           stock,
-          blog,
-          info,
           timestamp: new Date().toISOString(),
           url: baseUrl
         }
       })
 
     } catch (err) {
+
       res.status(500).json({
         status: false,
         creator: "yasamDev",
         error: err.message
       })
+
     }
   })
 
