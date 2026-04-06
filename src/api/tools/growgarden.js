@@ -7,40 +7,60 @@ module.exports = (app) => {
   const baseUrl = "https://growagardenstocknow.com"
 
   const cookies = () => {
-    let t = Math.floor(Date.now() / 1000)
-    let r = Math.floor(Math.random() * 1e9)
-    return `js_verified=1; _ga=GA1.1.${r}.${t}; _gid=GA1.2.${r}.${t}`
+    let t = Date.now()
+    return `js_verified=1; _ga=GA1.1.${Math.random()*1e9}.${t}; _gid=GA1.2.${Math.random()*1e9}.${t}`
+  }
+
+  const headers = () => ({
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
+    "Referer": "https://www.google.com/",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Cache-Control": "max-age=0",
+    "Cookie": cookies()
+  })
+
+  async function fetchWithRetry(url, tries = 3) {
+    for (let i = 0; i < tries; i++) {
+      try {
+        const res = await axios.get(url, {
+          headers: headers(),
+          timeout: 20000,
+          validateStatus: () => true
+        })
+
+        // detect block
+        if (
+          res.data.includes("Just a moment") ||
+          res.data.includes("cf-challenge") ||
+          res.status === 403
+        ) {
+          throw new Error("Blocked")
+        }
+
+        return res.data
+
+      } catch (err) {
+        if (i === tries - 1) throw err
+        await new Promise(r => setTimeout(r, 2000)) // delay retry
+      }
+    }
   }
 
   app.get("/tools/growgarden", async (req, res) => {
     try {
 
-      const { data } = await axios.get(baseUrl, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-          "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-          "Accept-Encoding": "gzip, deflate, br",
-          "Connection": "keep-alive",
-          "Upgrade-Insecure-Requests": "1",
-          "Referer": "https://www.google.com/",
-          "Sec-Fetch-Dest": "document",
-          "Sec-Fetch-Mode": "navigate",
-          "Sec-Fetch-Site": "none",
-          "Sec-Fetch-User": "?1",
-          "Cookie": cookies()
-        },
-        timeout: 30000,
-        validateStatus: () => true // biar ga auto throw
-      })
+      const html = await fetchWithRetry(baseUrl)
+      const $ = cheerio.load(html)
 
-      if (data.includes("Just a moment") || data.includes("cf-challenge")) {
-        throw new Error("Blocked by Cloudflare")
-      }
-
-      const $ = cheerio.load(data)
-
-      let stock = {}, blog = [], info = []
+      let stock = {}
 
       $("article[aria-label]").each((i, el) => {
         let name = ($(el).attr("aria-label") || $(el).find("h2").text()).replace("Stock","").trim()
@@ -48,15 +68,9 @@ module.exports = (app) => {
 
         $(el).find("ul li").each((i, li) => {
           let n = $(li).find("span:nth-child(2)").text().trim()
-          let img = $(li).find("img").attr("src")
-          let q = ($(li).find("span:last-child").text().match(/\d+/)||[])[0]
-
-          if (n && n !== "No accepted plants right now.")
-            items.push({
-              name: n,
-              quantity: q ? +q : null,
-              image: img ? (img.startsWith("http") ? img : baseUrl + img) : null
-            })
+          if (n && n !== "No accepted plants right now.") {
+            items.push({ name: n })
+          }
         })
 
         if (items.length) stock[name] = items
@@ -65,11 +79,7 @@ module.exports = (app) => {
       res.json({
         status: true,
         creator: "yasamDev",
-        result: {
-          stock,
-          timestamp: new Date().toISOString(),
-          url: baseUrl
-        }
+        result: stock
       })
 
     } catch (err) {
@@ -77,7 +87,7 @@ module.exports = (app) => {
       res.status(500).json({
         status: false,
         creator: "yasamDev",
-        error: err.message
+        error: "Masih diblokir Cloudflare / butuh proxy"
       })
 
     }
