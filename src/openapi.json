@@ -1876,27 +1876,66 @@
     }
   }
 },
-"/tools/pastebin": {
-  "get": {
-    "summary": "Get Pastebin",
-    "description": "Mengambil isi pastebin dari link atau ID.",
-    "tags": ["Tools"],
-    "parameters": [
-      {
-        "name": "url",
-        "in": "query",
-        "required": true,
-        "schema": { "type": "string" },
-        "example": "https://pastebin.com/fpUF4WS0"
+  "/tools/pastebin": {
+    "get": {
+      "summary": "Get Pastebin",
+      "description": "Mengambil isi paste dari Pastebin berdasarkan URL",
+      "tags": ["Tools"],
+      "parameters": [
+        {
+          "in": "query",
+          "name": "url",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "description": "URL Pastebin (contoh: https://pastebin.com/H6vQaTsD)"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Berhasil mengambil paste",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "creator": {
+                    "type": "string",
+                    "example": "yasamDev"
+                  },
+                  "result": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "H6vQaTsD"
+                      },
+                      "raw": {
+                        "type": "string",
+                        "example": "https://pastebin.com/raw/H6vQaTsD"
+                      },
+                      "content": {
+                        "type": "string",
+                        "example": "Isi paste..."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server error"
+        }
       }
-    ],
-    "responses": {
-      "200": { "description": "Berhasil" },
-      "400": { "description": "Parameter url wajib diisi" },
-      "500": { "description": "Server error" }
     }
-  }
-},
+  },
 "/tools/translate": {
   "get": {
     "summary": "Translate Text",
@@ -2063,99 +2102,6 @@
     }
   }
 },
-  "/tools/growgarden": {
-    "get": {
-      "summary": "Grow Garden Stock",
-      "description": "Mengambil data stok tanaman, craving, blog, dan info dari Grow A Garden",
-      "tags": ["Tools"],
-      "responses": {
-        "200": {
-          "description": "Berhasil mengambil data",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "status": {
-                    "type": "boolean",
-                    "example": true
-                  },
-                  "creator": {
-                    "type": "string",
-                    "example": "yasamDev"
-                  },
-                  "result": {
-                    "type": "object",
-                    "properties": {
-                      "stock": {
-                        "type": "object",
-                        "example": {
-                          "Seeds": [
-                            {
-                              "name": "Carrot",
-                              "quantity": 5,
-                              "image": "https://..."
-                            }
-                          ]
-                        }
-                      },
-                      "blog": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "title": {
-                              "type": "string",
-                              "example": "Tips Berkebun"
-                            },
-                            "link": {
-                              "type": "string",
-                              "example": "https://..."
-                            },
-                            "description": {
-                              "type": "string",
-                              "example": "..."
-                            }
-                          }
-                        }
-                      },
-                      "info": {
-                        "type": "array",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "title": {
-                              "type": "string",
-                              "example": "Update"
-                            },
-                            "description": {
-                              "type": "string",
-                              "example": "..."
-                            }
-                          }
-                        }
-                      },
-                      "timestamp": {
-                        "type": "string",
-                        "example": "2026-03-31T00:00:00.000Z"
-                      },
-                      "url": {
-                        "type": "string",
-                        "example": "https://growagardenstocknow.com"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "500": {
-          "description": "Server error"
-        }
-      }
-    }
-  },
 "/tools/berita-lombok": {
   "get": {
     "summary": "Berita Lombok / NTB",
