@@ -638,100 +638,6 @@
     }
   }
 },
-{
-  "/anime/search": {
-    "get": {
-      "summary": "Search Anime",
-      "description": "Mencari anime berdasarkan keyword",
-      "tags": ["Anime"],
-      "parameters": [
-        {
-          "name": "q",
-          "in": "query",
-          "required": true,
-          "description": "Kata kunci anime",
-          "schema": {
-            "type": "string",
-            "example": "naruto"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Berhasil mendapatkan data anime"
-        },
-        "400": {
-          "description": "Query kosong"
-        },
-        "500": {
-          "description": "Server error"
-        }
-      }
-    }
-  },
-
-  "/anime/detail": {
-    "get": {
-      "summary": "Detail Anime",
-      "description": "Mengambil detail anime dari URL",
-      "tags": ["Anime"],
-      "parameters": [
-        {
-          "name": "url",
-          "in": "query",
-          "required": true,
-          "description": "URL detail anime",
-          "schema": {
-            "type": "string",
-            "example": "https://s2.animekuindo.life/anime/naruto/"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Berhasil mendapatkan detail anime"
-        },
-        "400": {
-          "description": "URL kosong"
-        },
-        "500": {
-          "description": "Server error"
-        }
-      }
-    }
-  },
-
-  "/anime/stream": {
-    "get": {
-      "summary": "Stream Episode",
-      "description": "Mengambil link streaming dari episode anime",
-      "tags": ["Anime"],
-      "parameters": [
-        {
-          "name": "url",
-          "in": "query",
-          "required": true,
-          "description": "URL episode",
-          "schema": {
-            "type": "string",
-            "example": "https://s2.animekuindo.life/episode/naruto-episode-1/"
-          }
-        }
-      ],
-      "responses": {
-        "200": {
-          "description": "Berhasil mendapatkan stream"
-        },
-        "400": {
-          "description": "URL kosong"
-        },
-        "500": {
-          "description": "Server error"
-        }
-      }
-    }
-  }
-},
 "/anime/waifu": {
   "get": {
     "summary": "Waifu",
@@ -2157,6 +2063,99 @@
     }
   }
 },
+  "/tools/growgarden": {
+    "get": {
+      "summary": "Grow Garden Stock",
+      "description": "Mengambil data stok tanaman, craving, blog, dan info dari Grow A Garden",
+      "tags": ["Tools"],
+      "responses": {
+        "200": {
+          "description": "Berhasil mengambil data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "creator": {
+                    "type": "string",
+                    "example": "yasamDev"
+                  },
+                  "result": {
+                    "type": "object",
+                    "properties": {
+                      "stock": {
+                        "type": "object",
+                        "example": {
+                          "Seeds": [
+                            {
+                              "name": "Carrot",
+                              "quantity": 5,
+                              "image": "https://..."
+                            }
+                          ]
+                        }
+                      },
+                      "blog": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "example": "Tips Berkebun"
+                            },
+                            "link": {
+                              "type": "string",
+                              "example": "https://..."
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "..."
+                            }
+                          }
+                        }
+                      },
+                      "info": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string",
+                              "example": "Update"
+                            },
+                            "description": {
+                              "type": "string",
+                              "example": "..."
+                            }
+                          }
+                        }
+                      },
+                      "timestamp": {
+                        "type": "string",
+                        "example": "2026-03-31T00:00:00.000Z"
+                      },
+                      "url": {
+                        "type": "string",
+                        "example": "https://growagardenstocknow.com"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Server error"
+        }
+      }
+    }
+  },
 "/tools/berita-lombok": {
   "get": {
     "summary": "Berita Lombok / NTB",
