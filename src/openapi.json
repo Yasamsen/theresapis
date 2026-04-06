@@ -638,6 +638,98 @@
     }
   }
 },
+  "/anime/search": {
+    "get": {
+      "summary": "Search Anime",
+      "description": "Mencari anime berdasarkan keyword",
+      "tags": ["Anime"],
+      "parameters": [
+        {
+          "name": "q",
+          "in": "query",
+          "required": true,
+          "description": "Kata kunci anime",
+          "schema": {
+            "type": "string",
+            "example": "naruto"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Berhasil mendapatkan data anime"
+        },
+        "400": {
+          "description": "Query kosong"
+        },
+        "500": {
+          "description": "Server error"
+        }
+      }
+    }
+  },
+
+  "/anime/detail": {
+    "get": {
+      "summary": "Detail Anime",
+      "description": "Mengambil detail anime dari URL",
+      "tags": ["Anime"],
+      "parameters": [
+        {
+          "name": "url",
+          "in": "query",
+          "required": true,
+          "description": "URL detail anime",
+          "schema": {
+            "type": "string",
+            "example": "https://s2.animekuindo.life/anime/naruto/"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Berhasil mendapatkan detail anime"
+        },
+        "400": {
+          "description": "URL kosong"
+        },
+        "500": {
+          "description": "Server error"
+        }
+      }
+    }
+  },
+
+  "/anime/stream": {
+    "get": {
+      "summary": "Stream Episode",
+      "description": "Mengambil link streaming dari episode anime",
+      "tags": ["Anime"],
+      "parameters": [
+        {
+          "name": "url",
+          "in": "query",
+          "required": true,
+          "description": "URL episode",
+          "schema": {
+            "type": "string",
+            "example": "https://s2.animekuindo.life/episode/naruto-episode-1/"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Berhasil mendapatkan stream"
+        },
+        "400": {
+          "description": "URL kosong"
+        },
+        "500": {
+          "description": "Server error"
+        }
+      }
+    }
+  },
 "/anime/waifu": {
   "get": {
     "summary": "Waifu",
