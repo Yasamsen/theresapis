@@ -2021,7 +2021,7 @@
     }
   }
 },
-"/tools/tobersama-v2": {
+"/maker/tobersama-v2": {
   "get": {
     "summary": "Tobersama V2 Image",
     "description": "Menggabungkan dua gambar menjadi satu dan mengembalikan hasil berupa image.",

@@ -12,7 +12,7 @@ async function translate(text) {
           tl: "id",
           dt: "t",
           q: text
-        }
+        }{
       }
     );
 
@@ -24,8 +24,8 @@ async function translate(text) {
 
 module.exports = function (app) {
 
-  app.get("/search/motivasi/random", async (req, res) => {
-    try {
+  app.get("/maker/motivasi/random", async (req, res) => {
+    try 
       const { data } = await axios.get("http://quotes.toscrape.com/", {
         headers: {
           "User-Agent": "Mozilla/5.0"

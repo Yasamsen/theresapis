@@ -5,7 +5,7 @@ module.exports = function (app) {
 
   const BASE = 'https://api-faa.my.id/faa/tobersamav2';
 
-  app.get('/tools/tobersama-v2', async (req, res) => {
+  app.get('/maker/tobersama-v2', async (req, res) => {
     try {
       const { url1, url2 } = req.query;
 
