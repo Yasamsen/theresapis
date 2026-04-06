@@ -638,6 +638,7 @@
     }
   }
 },
+{
   "/anime/search": {
     "get": {
       "summary": "Search Anime",
@@ -729,7 +730,8 @@
         }
       }
     }
-  },
+  }
+},
 "/anime/waifu": {
   "get": {
     "summary": "Waifu",
