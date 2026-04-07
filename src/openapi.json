@@ -2264,40 +2264,6 @@
     }
   }
 },
-  "/tools/remini": {
-    "post": {
-      "summary": "AI Image Enhance (Remini)",
-      "description": "Meningkatkan kualitas gambar menggunakan AI (HD/Enhance)",
-      "tags": ["AI Image"],
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "image": {
-                  "type": "string",
-                  "example": "https://example.com/image.jpg"
-                }
-              }
-            }
-          }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "Berhasil enhance gambar",
-          "content": {
-            "image/png": {}
-          }
-        },
-        "500": {
-          "description": "Server error"
-        }
-      }
-    }
-  },
 "/news/kontan": {
   "get": {
     "summary": "Kontan News",
