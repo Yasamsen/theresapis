@@ -32,13 +32,49 @@ menjalankan proses terus-menerus.
 ```
 web-terminal/
 ├── api/
-│   └── exec.js        # serverless function: eksekusi command
+│   ├── exec.js         # serverless function: eksekusi command (terminal)
+│   └── upload.js        # serverless function: upload file & push ke GitHub
 ├── public/
-│   └── index.html      # UI terminal (xterm.js)
+│   ├── index.html       # UI terminal (xterm.js)
+│   └── upload.html       # UI uploader media -> GitHub
 ├── package.json
 ├── vercel.json
 └── README.md
 ```
+
+## Halaman uploader (`/upload.html`)
+
+Meniru alur script `auto-upload.sh`: pilih file dari HP lewat browser (bukan
+baca `/sdcard/uploads` otomatis, karena server Vercel tidak bisa mengakses
+storage HP kamu), isi nama folder, lalu sistem akan:
+
+1. Clone/pull repo `media-repo` ke `/tmp` di server.
+2. Copy file dengan penomoran lanjut (`001.jpg`, `002.mp4`, dst — lanjut dari
+   file terakhir di folder itu, sama seperti script aslinya).
+3. Generate ulang `api.json` (format sama: `status`, `creator`, `total`, `data`).
+4. Commit & push ke GitHub.
+5. Menampilkan link `api.json` hasil akhir.
+
+### Environment Variables tambahan yang perlu di-set
+
+Selain `TERMINAL_TOKEN` (dipakai juga untuk halaman upload), tambahkan:
+
+- `GITHUB_TOKEN` — Personal Access Token GitHub kamu (scope minimal: `repo`).
+  **Jangan taruh di kode, hanya di Environment Variables Vercel.**
+- `REPO_OWNER` — default `Yasamsen`
+- `REPO_NAME` — default `media-repo`
+- `REPO_BRANCH` — default `main`
+
+### ⚠️ Perlu diperhatikan
+
+- Link `raw.githubusercontent.com` yang dihasilkan bersifat **publik** kalau
+  repo-nya publik — siapa saja yang tahu link `api.json` atau link filenya
+  bisa mengaksesnya. Jangan upload sesuatu yang privat lewat ini.
+- Ukuran total upload per klik dibatasi oleh limit body request Vercel
+  (umumnya beberapa MB di plan Hobby). Untuk video besar, upload satu-satu
+  atau kompres dulu.
+- `GITHUB_TOKEN` punya akses penuh ke repo sesuai scope-nya — perlakukan
+  seperti password, jangan disebar.
 
 ## Cara deploy
 
