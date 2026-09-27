@@ -44,16 +44,20 @@ web-terminal/
 
 ## Halaman uploader (`/upload.html`)
 
-Meniru alur script `auto-upload.sh`: pilih file dari HP lewat browser (bukan
-baca `/sdcard/uploads` otomatis, karena server Vercel tidak bisa mengakses
-storage HP kamu), isi nama folder, lalu sistem akan:
+Meniru alur script `auto-upload.sh`, tapi **tidak memakai binary `git`** —
+runtime serverless Vercel tidak menyediakan `git`, jadi kalau kamu coba
+`git clone` dkk di halaman terminal (`/`), itu juga akan gagal dengan
+"command not found". Untuk uploader, semua operasi dilakukan lewat
+**GitHub REST API** (Contents API) via `fetch`, bukan CLI:
 
-1. Clone/pull repo `media-repo` ke `/tmp` di server.
+1. Cek isi folder tujuan di repo lewat GitHub API.
 2. Copy file dengan penomoran lanjut (`001.jpg`, `002.mp4`, dst — lanjut dari
-   file terakhir di folder itu, sama seperti script aslinya).
+   file terakhir di folder itu, sama seperti script aslinya). Tiap file
+   di-upload lewat satu request PUT (jadi tiap file = satu commit tersendiri,
+   beda dari script asli yang satu commit untuk semua file — efeknya cuma
+   riwayat commit lebih ramai, hasil akhirnya sama).
 3. Generate ulang `api.json` (format sama: `status`, `creator`, `total`, `data`).
-4. Commit & push ke GitHub.
-5. Menampilkan link `api.json` hasil akhir.
+4. Menampilkan link `api.json` hasil akhir.
 
 ### Environment Variables tambahan yang perlu di-set
 
@@ -74,7 +78,13 @@ Selain `TERMINAL_TOKEN` (dipakai juga untuk halaman upload), tambahkan:
   (umumnya beberapa MB di plan Hobby). Untuk video besar, upload satu-satu
   atau kompres dulu.
 - `GITHUB_TOKEN` punya akses penuh ke repo sesuai scope-nya — perlakukan
-  seperti password, jangan disebar.
+  seperti password, jangan disebar. **Jangan pernah tempel token asli di
+  chat, terminal, atau tempat lain yang tidak perlu** — kalau sudah terlanjur
+  ke-expose, revoke dan buat token baru di GitHub, lalu update Environment
+  Variables di Vercel.
+- Karena tidak pakai `git`, perintah `git clone` / `git push` di halaman
+  terminal (`/`) tidak akan berfungsi — itu memang keterbatasan runtime
+  Vercel, bukan bug. Untuk urusan push media, pakai `/upload.html`.
 
 ## Cara deploy
 
