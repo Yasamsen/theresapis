@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YASAM Media Uploader</title>
+<style>
+:root{--bg:#07110c;--panel:#0d1912;--panel2:#101f16;--border:#1d3526;--fg:#e9fff0;--muted:#8ba795;--green:#35d477;--green2:#20a95a;--error:#ff5c5c;--warning:#ffc857;--info:#62a8ff;--shadow:rgba(0,0,0,.35)}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#10291a 0,var(--bg) 45%);color:var(--fg);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.container{width:min(950px,calc(100% - 30px));margin:30px auto}.header{margin-bottom:22px}.header h1{margin:0;font-size:28px;font-weight:800}.header p{color:var(--muted);margin:8px 0 0;line-height:1.5}
+.card{background:rgba(13,25,18,.92);border:1px solid var(--border);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 15px 45px var(--shadow)}.section-title{font-size:17px;font-weight:750;margin-bottom:15px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:flex;flex-direction:column;gap:7px}.field.full{grid-column:1/-1}
+label{color:var(--muted);font-size:13px;font-weight:650}input,textarea{width:100%;border:1px solid var(--border);background:#09140e;color:var(--fg);border-radius:11px;padding:12px 13px;outline:none;transition:.2s;font:inherit}
+input:focus,textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(53,212,119,.08)}textarea{resize:vertical;min-height:110px}
+.dropzone{border:1.5px dashed #2b573a;background:#09160e;border-radius:16px;padding:30px 18px;text-align:center;cursor:pointer;transition:.2s}.dropzone:hover,.dropzone.dragover{border-color:var(--green);background:#0c1d12}.dropzone .icon{font-size:35px;margin-bottom:8px}.dropzone strong{display:block;font-size:16px;margin-bottom:5px}.dropzone span{color:var(--muted);font-size:13px}.hidden{display:none!important}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}button{border:0;border-radius:10px;padding:11px 15px;cursor:pointer;color:white;background:var(--green2);font-weight:700;transition:.2s}button:hover{filter:brightness(1.12);transform:translateY(-1px)}button.secondary{background:#173322;border:1px solid var(--border)}button.danger{background:#4b1d1d;border:1px solid #713030}button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.file-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}.file-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px;border-radius:10px;background:#0a1710;border:1px solid var(--border)}.file-info{min-width:0}.file-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}.file-meta{color:var(--muted);font-size:12px;margin-top:3px;overflow-wrap:anywhere}.remove-btn{flex-shrink:0;background:#30191b;color:#ff9b9b;padding:7px 10px;font-size:12px}
+.url-actions{display:flex;gap:9px;margin-top:10px}.url-actions button{flex:0 0 auto}.counter,.note{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}.counter{font-size:13px}.progress-wrap{margin-top:18px;display:none}.progress-info{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;color:var(--muted);font-size:13px}.progress{width:100%;height:10px;background:#07100b;border:1px solid var(--border);border-radius:999px;overflow:hidden}.progress-bar{height:100%;width:0;background:var(--green);transition:width .25s}
+.log{background:#050b07;border:1px solid var(--border);border-radius:12px;padding:14px;min-height:120px;max-height:450px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;line-height:1.65}.log-line{margin-bottom:4px;word-break:break-word}.log-ok{color:var(--green)}.log-err{color:var(--error)}.log-warn{color:var(--warning)}.log-info{color:var(--info)}.submit{width:100%;margin-top:18px;padding:14px;font-size:15px}
+@media(max-width:700px){.container{width:calc(100% - 20px);margin:15px auto}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{padding:15px}.header h1{font-size:23px}.url-actions{flex-direction:column}.url-actions button{width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header"><h1>YASAM Media Uploader</h1><p>Upload media langsung ke GitHub dan otomatis membuat atau memperbarui <code>api.json</code>.</p></div>
+  <div class="card">
+    <div class="section-title">⚙️ Konfigurasi GitHub</div>
+    <div class="grid">
+      <div class="field full"><label for="token">GitHub Token</label><input id="token" type="password" placeholder="Masukkan GitHub Token" autocomplete="off"></div>
+      <div class="field"><label for="owner">Owner</label><input id="owner" value="YasamDev" placeholder="YasamDev"></div>
+      <div class="field"><label for="repo">Repository</label><input id="repo" value="Media" placeholder="Media"></div>
+      <div class="field"><label for="branch">Branch</label><input id="branch" value="main" placeholder="main"></div>
+      <div class="field"><label for="folder">Folder Media</label><input id="folder" value="Fubuki" placeholder="Fubuki"></div>
+    </div>
+    <div class="note">Token dipakai dari browser untuk mengakses GitHub. Jangan bagikan token atau menyimpannya di kode publik. Untuk keamanan, cabut token jika pernah terlanjur dibagikan.</div>
+  </div>
+  <div class="card">
+    <div class="section-title">📁 Pilih File / Folder</div>
+    <div class="dropzone" id="dropzone"><div class="icon">📤</div><strong>Klik atau tarik file ke sini</strong><span>Bisa memilih banyak file sekaligus</span></div>
+    <input id="fileInput" type="file" class="hidden" multiple>
+    <input id="folderInput" type="file" class="hidden" webkitdirectory directory multiple>
+    <div class="actions"><button type="button" class="secondary" id="folderBtn">📂 Pilih Folder</button><button type="button" class="danger" id="clearFilesBtn">🗑️ Bersihkan File</button></div>
+    <div id="fileList" class="file-list"></div><div id="counter" class="counter">Belum ada file dipilih.</div>
+  </div>
+  <div class="card">
+    <div class="section-title">🌐 Import Media dari URL</div>
+    <textarea id="urlInput" placeholder="Masukkan URL media, satu URL per baris.&#10;https://example.com/image.png&#10;https://example.com/video.mp4"></textarea>
+    <div class="url-actions"><button type="button" id="addUrlBtn">➕ Tambahkan URL</button><button type="button" class="secondary" id="clearUrlBtn">🧹 Bersihkan URL</button></div>
+    <div class="note">URL diunduh lalu diunggah ke GitHub dengan nama otomatis seperti 001.jpg, 002.jpg, dan seterusnya. Sebagian server menolak permintaan browser karena CORS.</div>
+  </div>
+  <div class="card">
+    <div class="section-title">🚀 Upload</div><button id="submitBtn" class="submit" type="button">🚀 Mulai Upload</button>
+    <div id="progressWrap" class="progress-wrap"><div class="progress-info"><span id="progressStepLabel">Menunggu...</span><span id="progressPercent">0%</span></div><div class="progress"><div id="progressBar" class="progress-bar"></div></div></div>
+  </div>
+  <div class="card"><div class="section-title">📋 Log</div><div id="log" class="log"><div class="log-line log-info">Siap digunakan.</div></div></div>
+</div>
+<script>
+'use strict';
+let selectedFiles = [];
+let failedUrls = [];
+const $ = id => document.getElementById(id);
+const tokenInput = $('token'), ownerInput = $('owner'), repoInput = $('repo'), branchInput = $('branch'), folderInputText = $('folder');
+const dropzone = $('dropzone'), fileInput = $('fileInput'), folderPicker = $('folderInput'), folderBtn = $('folderBtn');
+const fileList = $('fileList'), counter = $('counter'), clearFilesBtn = $('clearFilesBtn');
+const urlInput = $('urlInput'), addUrlBtn = $('addUrlBtn'), clearUrlBtn = $('clearUrlBtn');
+const submitBtn = $('submitBtn'), progressWrap = $('progressWrap'), progressBar = $('progressBar'), progressPercent = $('progressPercent'), progressStepLabel = $('progressStepLabel'), log = $('log');
+
+function escapeHtml(value) { return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
+function writeLog(message,type='info') {
+  const div=document.createElement('div');
+  div.className='log-line '+(type==='ok'?'log-ok':type==='err'?'log-err':type==='warn'?'log-warn':'log-info');
+  div.innerHTML='['+new Date().toLocaleTimeString()+'] '+message;
+  log.appendChild(div); log.scrollTop=log.scrollHeight;
+}
+function formatBytes(bytes) {
+  if(!bytes) return '0 B';
+  const units=['B','KB','MB','GB']; const i=Math.min(Math.floor(Math.log(bytes)/Math.log(1024)),units.length-1);
+  return (bytes/Math.pow(1024,i)).toFixed(2)+' '+units[i];
+}
+function getExtension(filename) {
+  const clean=String(filename||'').split('?')[0].split('#')[0], i=clean.lastIndexOf('.');
+  return i<0||i===clean.length-1?'':clean.substring(i+1).toLowerCase();
+}
+function extensionFromContentType(type) {
+  type=(type||'').toLowerCase();
+  if(type.includes('jpeg')||type.includes('jpg')) return 'jpg';
+  if(type.includes('png')) return 'png'; if(type.includes('webp')) return 'webp'; if(type.includes('gif')) return 'gif';
+  if(type.includes('bmp')) return 'bmp'; if(type.includes('svg')) return 'svg'; if(type.includes('mp4')) return 'mp4';
+  if(type.includes('webm')) return 'webm'; if(type.includes('quicktime')) return 'mov'; if(type.includes('mpeg')) return 'mpeg';
+  if(type.includes('audio/mpeg')) return 'mp3'; if(type.includes('audio/')) return 'audio'; return 'bin';
+}
+function getFilenameFromUrl(url) {
+  try { const p=new URL(url); const n=p.pathname.split('/').filter(Boolean).pop(); return n?decodeURIComponent(n):'media.bin'; }
+  catch { return 'media.bin'; }
+}
+function renderFileList() {
+  fileList.innerHTML='';
+  if(!selectedFiles.length){counter.textContent='Belum ada file dipilih.';return;}
+  selectedFiles.forEach((item,index)=>{
+    const row=document.createElement('div'); row.className='file-item';
+    const info=document.createElement('div'); info.className='file-info';
+    const name=document.createElement('div'); name.className='file-name';
+    const meta=document.createElement('div'); meta.className='file-meta';
+    name.textContent=item.type==='url'?item.name:item.file.name;
+    meta.textContent=item.type==='url'?'🌐 '+item.url:'📁 '+formatBytes(item.file.size);
+    info.append(name,meta);
+    const remove=document.createElement('button'); remove.className='remove-btn'; remove.type='button'; remove.textContent='Hapus';
+    remove.onclick=()=>{selectedFiles.splice(index,1);renderFileList();};
+    row.append(info,remove);fileList.appendChild(row);
+  });
+  counter.textContent=selectedFiles.length+' item dipilih.';
+}
+function handleFiles(files) {
+  Array.from(files).forEach(file=>{
+    if(!selectedFiles.some(x=>x.type==='file'&&x.file.name===file.name&&x.file.size===file.size&&x.file.lastModified===file.lastModified)) selectedFiles.push({type:'file',file});
+  });
+  renderFileList();
+}
+dropzone.addEventListener('click',()=>fileInput.click());
+fileInput.addEventListener('change',()=>{handleFiles(fileInput.files);fileInput.value='';});
+dropzone.addEventListener('dragover',e=>{e.preventDefault();dropzone.classList.add('dragover');});
+dropzone.addEventListener('dragleave',()=>dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop',e=>{e.preventDefault();dropzone.classList.remove('dragover');handleFiles(e.dataTransfer.files);});
+folderBtn.addEventListener('click',()=>folderPicker.click());
+folderPicker.addEventListener('change',()=>{handleFiles(folderPicker.files);folderPicker.value='';});
+clearFilesBtn.addEventListener('click',()=>{selectedFiles=selectedFiles.filter(x=>x.type!=='file');renderFileList();writeLog('File lokal dibersihkan.');});
+addUrlBtn.addEventListener('click',()=>{
+  const text=urlInput.value.trim();if(!text){alert('Masukkan URL terlebih dahulu.');return;}
+  let added=0;
+  text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).forEach(url=>{
+    try {const parsed=new URL(url);if(!['http:','https:'].includes(parsed.protocol))throw new Error();}
+    catch {writeLog('URL tidak valid: '+escapeHtml(url),'warn');return;}
+    if(selectedFiles.some(x=>x.type==='url'&&x.url===url)){writeLog('URL sudah ada: '+escapeHtml(url),'warn');return;}
+    selectedFiles.push({type:'url',url,name:getFilenameFromUrl(url)});added++;
+  });
+  urlInput.value='';renderFileList();if(added)writeLog(added+' URL ditambahkan.','ok');
+});
+clearUrlBtn.addEventListener('click',()=>{selectedFiles=selectedFiles.filter(x=>x.type!=='url');urlInput.value='';renderFileList();writeLog('URL dibersihkan.');});
+
+async function downloadUrl(url) {
+  let directError;
+  try {
+    const r=await fetch(url,{method:'GET',mode:'cors'});
+    if(!r.ok)throw new Error('HTTP '+r.status+' '+r.statusText);
+    const blob=await r.blob();if(!blob.size)throw new Error('File kosong dari server.');return blob;
+  } catch(e) {directError=e;}
+  try {
+    const proxy='https://images.weserv.nl/?url='+encodeURIComponent(url);
+    const r=await fetch(proxy);
+    if(!r.ok)throw new Error('HTTP '+r.status+' '+r.statusText);
+    const blob=await r.blob();if(!blob.size)throw new Error('Proxy mengembalikan file kosong.');return blob;
+  } catch(e) {
+    throw new Error('Gagal mengambil media. Direct: '+(directError?.message||'gagal')+' | Proxy: '+e.message+' | URL: '+url);
+  }
+}
+function blobToBase64(blob) {
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>{const result=String(reader.result);const comma=result.indexOf(',');if(comma<0)return reject(new Error('Format Base64 tidak valid.'));resolve(result.slice(comma+1));};
+    reader.onerror=()=>reject(new Error('Gagal membaca file.'));reader.readAsDataURL(blob);
+  });
+}
+function githubHeaders() {
+  const token=tokenInput.value.trim();
+  return {'Authorization':'Bearer '+token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+}
+function config() {
+  const owner=ownerInput.value.trim(),repo=repoInput.value.trim(),branch=branchInput.value.trim(),folder=folderInputText.value.trim().replace(/^\/+|\/+$/g,'');
+  if(!owner||!repo||!branch||!folder)throw new Error('Owner, repository, branch, dan folder wajib diisi.');
+  if(folder.split('/').some(part=>!part||part==='.'||part==='..'))throw new Error('Path folder tidak valid.');
+  return {owner,repo,branch,folder};
+}
+function repoApiUrl(c) {return 'https://api.github.com/repos/'+encodeURIComponent(c.owner)+'/'+encodeURIComponent(c.repo);}
+function encodePath(path) {return path.split('/').map(encodeURIComponent).join('/');}
+async function githubJson(url,options={}) {
+  const response=await fetch(url,{...options,headers:{...githubHeaders(),...(options.headers||{})}});
+  const data=await response.json().catch(()=>({}));
+  return {response,data};
+}
+
+/*
+ * Folder belum ada dianggap folder baru. Jika repository benar-benar kosong,
+ * file pertama diunggah tanpa parameter branch agar GitHub membuat commit awal.
+ */
+async function listFolder() {
+  const c=config(),base=repoApiUrl(c);
+  const repoResult=await githubJson(base);
+  if(!repoResult.response.ok)throw new Error('Repository tidak ditemukan atau token tidak punya akses. HTTP '+repoResult.response.status+': '+(repoResult.data.message||'Unknown error'));
+  const repoData=repoResult.data;
+  const folderUrl=base+'/contents/'+encodePath(c.folder)+'?ref='+encodeURIComponent(c.branch);
+  const result=await githubJson(folderUrl);
+  if(result.response.ok) {
+    if(Array.isArray(result.data))return {files:result.data,emptyRepo:false,defaultBranch:repoData.default_branch||c.branch};
+    throw new Error('Path folder bukan folder. Periksa nama folder media.');
+  }
+  if(result.response.status===404||result.response.status===409) {
+    // Cek branch: bila branch belum ada dan repo belum punya commit, ini repo kosong.
+    const branchResult=await githubJson(base+'/branches/'+encodeURIComponent(c.branch));
+    if(branchResult.response.ok) {
+      writeLog('Folder belum ada. Folder akan dibuat otomatis saat file pertama diunggah.','warn');
+      return {files:[],emptyRepo:false,defaultBranch:repoData.default_branch||c.branch};
+    }
+    const isEmpty=!repoData.size&&!repoData.pushed_at;
+    if(isEmpty) {
+      writeLog('Repository kosong. Upload pertama akan membuat commit awal sekaligus membuat folder.','warn');
+      return {files:[],emptyRepo:true,defaultBranch:repoData.default_branch||c.branch};
+    }
+    throw new Error('Folder tidak ditemukan dan branch "'+c.branch+'" tidak tersedia. Periksa nama branch.');
+  }
+  throw new Error('Gagal membaca folder. HTTP '+result.response.status+': '+(result.data.message||'Kesalahan GitHub API'));
+}
+async function getFileSha(path,c) {
+  const result=await githubJson(repoApiUrl(c)+'/contents/'+encodePath(path)+'?ref='+encodeURIComponent(c.branch));
+  if(result.response.ok&&result.data&&result.data.type==='file')return result.data.sha;
+  if(result.response.status===404)return undefined;
+  throw new Error('Gagal memeriksa file '+path+': '+(result.data.message||result.response.status));
+}
+async function putFile(filename,base64,message,options={}) {
+  const c=config(),path=c.folder+'/'+filename;
+  const body={message,content:base64};
+  // Saat repo kosong, parameter branch sengaja tidak dikirim untuk membuat commit awal.
+  if(!options.initializeEmpty)body.branch=c.branch;
+  if(options.sha)body.sha=options.sha;
+  const result=await githubJson(repoApiUrl(c)+'/contents/'+encodePath(path),{
+    method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+  });
+  if(!result.response.ok)throw new Error('GitHub HTTP '+result.response.status+': '+(result.data.message||JSON.stringify(result.data)));
+  return result.data;
+}
+function nextCounter(files) {
+  let max=0;
+  files.forEach(item=>{const m=(item?.name||'').match(/^(\d+)/);if(m)max=Math.max(max,parseInt(m[1],10));});
+  return max+1;
+}
+function encodeBase64Utf8(text) {
+  const bytes=new TextEncoder().encode(text);let binary='';
+  for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,i+0x8000));
+  return btoa(binary);
+}
+async function updateApiJson(existingFiles,addedFiles,options={}) {
+  const c=config(),base='https://raw.githubusercontent.com/'+c.owner+'/'+c.repo+'/'+encodeURIComponent(c.branch)+'/'+c.folder.split('/').map(encodeURIComponent).join('/');
+  const urls=[];
+  existingFiles.forEach(item=>{
+    if(!item?.name||item.name.toLowerCase()==='api.json'||(item.type&&item.type!=='file'))return;
+    urls.push(base+'/'+encodeURIComponent(item.name));
+  });
+  addedFiles.forEach(filename=>urls.push(base+'/'+encodeURIComponent(filename)));
+  const unique=Array.from(new Set(urls));
+  unique.sort((a,b)=>{
+    const an=a.split('/').pop(),bn=b.split('/').pop(),am=an.match(/^(\d+)/),bm=bn.match(/^(\d+)/);
+    if(am&&bm)return Number(am[1])-Number(bm[1]);
+    if(am)return -1;if(bm)return 1;return an.localeCompare(bn);
+  });
+  const apiData={status:true,creator:'yasamDev',total:unique.length,data:unique};
+  const base64=encodeBase64Utf8(JSON.stringify(apiData,null,2));
+  const sha=existingFiles.find(x=>x.name?.toLowerCase()==='api.json')?.sha;
+  await putFile('api.json',base64,'Update api.json',{sha,initializeEmpty:options.initializeEmpty});
+  return unique.length;
+}
+function setBusy(state) {
+  submitBtn.disabled=state;folderBtn.disabled=state;clearFilesBtn.disabled=state;addUrlBtn.disabled=state;clearUrlBtn.disabled=state;
+  progressWrap.style.display=state?'block':'none';
+}
+function updateProgress(current,total,label) {
+  const percent=total>0?Math.round(current/total*100):0;
+  progressBar.style.width=percent+'%';progressPercent.textContent=percent+'%';progressStepLabel.textContent=label;
+}
+submitBtn.addEventListener('click',async()=>{
+  failedUrls=[];log.innerHTML='';
+  if(!tokenInput.value.trim()){alert('Masukkan GitHub Token.');return;}
+  if(!selectedFiles.length){alert('Pilih file atau tambahkan URL terlebih dahulu.');return;}
+  try{config();}catch(e){alert(e.message);return;}
+  setBusy(true);
+  try {
+    writeLog('Memeriksa repository dan folder GitHub...','info');
+    const state=await listFolder();
+    let existingFiles=state.files;
+    let initializeEmpty=state.emptyRepo;
+    writeLog('Pemeriksaan selesai. '+existingFiles.length+' item ditemukan.','ok');
+    let number=nextCounter(existingFiles);
+    writeLog('Nomor berikutnya: '+String(number).padStart(3,'0'),'info');
+    const added=[];
+    for(let i=0;i<selectedFiles.length;i++) {
+      const item=selectedFiles[i];
+      updateProgress(i,selectedFiles.length,'Memproses '+(i+1)+' / '+selectedFiles.length);
+      let originalName='',extension='',base64='';
+      if(item.type==='file') {
+        const file=item.file;originalName=file.name;extension=getExtension(originalName)||extensionFromContentType(file.type);
+        writeLog('Menyiapkan: '+escapeHtml(originalName),'info');
+        base64=await blobToBase64(file);
+      } else {
+        writeLog('Mengambil URL: '+escapeHtml(item.url),'info');
+        try {
+          const blob=await downloadUrl(item.url);
+          originalName=item.name;extension=getExtension(originalName)||extensionFromContentType(blob.type);
+          if(extension==='bin'&&blob.type)extension=extensionFromContentType(blob.type);
+          base64=await blobToBase64(blob);
+          writeLog('URL berhasil diunduh ('+formatBytes(blob.size)+'): '+escapeHtml(item.url),'ok');
+        } catch(e) {
+          failedUrls.push({url:item.url,error:e.message});
+          writeLog('URL gagal: '+escapeHtml(item.url)+' — '+escapeHtml(e.message),'err');
+          continue;
+        }
+      }
+      let filename=String(number).padStart(3,'0')+'.'+extension;
+      while(existingFiles.some(x=>x.name===filename)||added.includes(filename)) {
+        number++;filename=String(number).padStart(3,'0')+'.'+extension;
+      }
+      writeLog('Mengunggah '+escapeHtml(filename)+'...','info');
+      try {
+        await putFile(filename,base64,'Upload '+filename,{initializeEmpty});
+        initializeEmpty=false;
+        added.push(filename);
+        existingFiles.push({name:filename,type:'file'});
+        writeLog('Berhasil: '+escapeHtml(filename),'ok');
+        number++;
+      } catch(e) {
+        writeLog('Upload gagal '+escapeHtml(filename)+': '+escapeHtml(e.message),'err');
+        // Jika upload pertama gagal, jangan menganggap repository sudah terinisialisasi.
+      }
+      updateProgress(i+1,selectedFiles.length,'Selesai '+(i+1)+' / '+selectedFiles.length);
+    }
+    if(added.length===0&&initializeEmpty) {
+      throw new Error('Belum ada file yang berhasil di-upload. Repository masih kosong; periksa token, izin Contents: Read and write, dan pesan error di atas.');
+    }
+    writeLog('Memperbarui api.json...','info');
+    const total=await updateApiJson(existingFiles,added,{initializeEmpty});
+    writeLog('api.json berhasil diperbarui. Total media: '+total,'ok');
+    if(failedUrls.length) {
+      writeLog('Total URL gagal: '+failedUrls.length,'err');
+      failedUrls.forEach((x,i)=>writeLog((i+1)+'. '+escapeHtml(x.url)+' — '+escapeHtml(x.error),'err'));
+    } else writeLog('Semua URL berhasil diunduh.','ok');
+    updateProgress(selectedFiles.length,selectedFiles.length,'Selesai');
+    writeLog('Proses selesai. File berhasil di-upload: '+added.length,'ok');
+  } catch(e) {
+    writeLog('PROSES GAGAL: '+escapeHtml(e.message),'err');
+    console.error(e);
+  } finally {setBusy(false);}
+});
+renderFileList();
+</script>
+</body>
+</html>
